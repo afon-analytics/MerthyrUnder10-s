@@ -240,7 +240,7 @@
       try {
         const r = await fetch(EMAIL_FN_URL, {
           method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
           body: JSON.stringify({ to, subject, body }),
         });
         const d = await r.json();
