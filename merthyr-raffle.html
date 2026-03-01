@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Merthyr RFC Under 10's Easter Raffle</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --green: #2d6a30;
+      --green-light: #4ecdc4;
+      --orange: #e8834a;
+      --red: #b5442d;
+      --cream: #f4f1ec;
+      --white: #fff;
+      --dark: #111318;
+      --card-dark: #1a1c25;
+      --text: #1a1a1a;
+      --text-mid: #666;
+      --text-light: #999;
+      --border: #e5e2dc;
+      --input-bg: #fafaf7;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Outfit', sans-serif;
+      background: var(--cream);
+      color: var(--text);
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .bg-texture {
+      position: fixed; inset: 0; pointer-events: none; z-index: 0;
+      background: radial-gradient(circle at 20% 20%, rgba(45,106,48,0.06) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 80%, rgba(181,68,45,0.05) 0%, transparent 50%);
+    }
+
+    .container { position: relative; z-index: 1; max-width: 520px; margin: 0 auto; padding: 24px 16px 60px; }
+
+    /* --- Shared --- */
+    .mono { font-family: 'JetBrains Mono', monospace; }
+    .fade-up { animation: fadeUp 0.45s ease both; }
+    .fade-up-d1 { animation-delay: 0.08s; }
+    .fade-up-d2 { animation-delay: 0.15s; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .card {
+      background: var(--white); border-radius: 16px; padding: 28px 24px;
+      box-shadow: 0 2px 24px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
+    }
+
+    .btn-primary {
+      width: 100%; padding: 14px 24px; background: var(--green); color: #fff; border: none;
+      border-radius: 10px; font-size: 16px; font-weight: 700; font-family: 'Outfit', sans-serif;
+      cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-primary:hover { opacity: 0.9; }
+    .btn-primary:active { transform: scale(0.985); }
+    .btn-primary:disabled { opacity: 0.35; cursor: default; }
+
+    .btn-outline {
+      width: 100%; padding: 12px 24px; background: transparent; color: var(--green);
+      border: 2px solid var(--green); border-radius: 10px; font-size: 15px; font-weight: 600;
+      font-family: 'Outfit', sans-serif; cursor: pointer;
+    }
+
+    input[type="text"], input[type="email"] {
+      width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px;
+      font-size: 15px; font-family: 'Outfit', sans-serif; color: var(--text);
+      background: var(--input-bg); outline: none; transition: border-color 0.2s;
+    }
+    input:focus { border-color: var(--green); }
+
+    .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
+
+    .switch-link { background: none; border: none; color: var(--text-light); font-size: 13px; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 500; }
+    .switch-link:hover { color: var(--text-mid); }
+
+    /* --- Customer --- */
+    .header { text-align: center; margin-bottom: 28px; }
+    .header h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
+    .header h2 { font-size: 18px; font-weight: 400; color: var(--green); margin: 4px 0 12px; letter-spacing: 0.5px; }
+    .price-tag { display: inline-block; background: var(--green); color: #fff; padding: 6px 18px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+    .desc-box { margin-top: 16px; background: var(--white); border: 2px dashed #d4cfbf; border-radius: 12px; padding: 14px 20px; }
+    .desc-box .prize { color: var(--green); font-weight: 600; }
+
+    .field-group { margin-bottom: 20px; }
+    .field-group label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
+    .hint { font-size: 12px; color: var(--text-light); margin-top: 4px; }
+
+    .qty-row { display: flex; align-items: center; background: var(--input-bg); border-radius: 10px; border: 2px solid var(--border); overflow: hidden; width: fit-content; }
+    .qty-btn { width: 48px; height: 48px; border: none; background: transparent; font-size: 22px; color: var(--green); cursor: pointer; font-weight: 600; font-family: 'Outfit', sans-serif; }
+    .qty-display { min-width: 48px; text-align: center; font-size: 20px; font-weight: 700; color: var(--text); }
+
+    .total-bar { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: var(--cream); border-radius: 10px; margin-bottom: 20px; }
+    .total-value { font-size: 24px; font-weight: 800; color: var(--green); }
+
+    .check-circle { width: 56px; height: 56px; border-radius: 50%; background: var(--green); color: #fff; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
+    .ticket-strip { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 20px; }
+    .ticket-chip { background: #f0ece4; border: 2px dashed #c5bfb3; border-radius: 8px; padding: 8px 16px; font-size: 16px; font-weight: 600; color: var(--green); }
+    .confirm-details { background: var(--input-bg); border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+    .detail-row { display: flex; justify-content: space-between; padding: 6px 0; }
+    .detail-label { font-size: 13px; color: #888; }
+    .detail-value { font-size: 14px; color: #333; font-weight: 500; }
+
+    .email-ok { background: #eef7ee; color: var(--green); padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 16px; text-align: center; }
+    .email-fail { background: #fef3f0; color: var(--red); padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 16px; text-align: center; }
+
+    .payment-box { background: var(--input-bg); border-radius: 10px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
+    .payment-box h4 { font-size: 14px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .bank-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 14px; }
+    .bank-label { color: #888; font-size: 13px; }
+    .bank-value { font-weight: 500; color: #333; }
+
+    .footer { text-align: center; margin-top: 24px; font-size: 13px; color: var(--text-light); display: flex; gap: 8px; justify-content: center; }
+
+    .privacy-note { text-align: center; margin-top: 16px; font-size: 11px; color: #aaa; line-height: 1.5; padding: 0 12px; }
+
+    /* --- Admin --- */
+    body.admin-mode { background: var(--dark); color: #e8e6e1; }
+    body.admin-mode .bg-texture { background: none; }
+
+    .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 8px; }
+    .admin-header h1 { font-size: 24px; font-weight: 800; color: #e8e6e1; }
+    .admin-header p { font-size: 13px; color: #666; margin-top: 2px; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
+    .stat-card { background: var(--card-dark); border-radius: 10px; padding: 12px 14px; }
+    .stat-label { font-size: 10px; color: #777; text-transform: uppercase; letter-spacing: 1.2px; }
+    .stat-val { font-size: 26px; font-weight: 800; margin-top: 2px; }
+    .stat-sub { font-size: 11px; color: #555; margin-top: 2px; }
+
+    .progress-bar-wrap { background: var(--card-dark); border-radius: 10px; padding: 14px; margin-bottom: 20px; }
+    .progress-meta { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 6px; }
+    .progress-track { height: 8px; background: #2a2c35; border-radius: 4px; overflow: hidden; }
+    .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--green-light)); border-radius: 4px; transition: width 0.4s ease; }
+
+    .toolbar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
+    .toolbar input {
+      flex: 1 1 180px; padding: 8px 12px; background: var(--card-dark); border: 1px solid #333;
+      border-radius: 8px; color: #e8e6e1; font-size: 13px; font-family: 'Outfit', sans-serif; outline: none;
+    }
+    .toolbar input:focus { border-color: var(--green-light); }
+    .btn-remind-all { padding: 8px 14px; background: var(--orange); color: #fff; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; white-space: nowrap; }
+
+    .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
+    .tab-btn { padding: 6px 14px; background: transparent; color: #666; border: 1px solid transparent; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'Outfit', sans-serif; }
+    .tab-btn.active { background: #2a2c35; color: #e8e6e1; border-color: #444; }
+
+    .buyer-card { background: var(--card-dark); border-radius: 10px; padding: 16px; margin-bottom: 8px; }
+    .buyer-card .name { font-size: 15px; font-weight: 600; color: #e8e6e1; }
+    .buyer-card .email { font-size: 12px; color: #666; margin-top: 2px; }
+    .buyer-card .tickets-info { font-size: 12px; color: #555; margin-top: 4px; }
+    .buyer-card .paid-info { font-size: 12px; color: #888; margin-top: 2px; }
+
+    .badge { font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600; display: inline-block; }
+    .badge-paid { color: var(--green); background: #1a2e1a; }
+    .badge-unpaid { color: var(--orange); background: #2e1f14; }
+
+    .action-row { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
+    .btn-sm { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; border: 1px solid; }
+    .btn-mark-paid { background: #1a2e1a; color: var(--green-light); border-color: var(--green); }
+    .btn-send-reminder { background: #2e1f14; color: var(--orange); border-color: #5a3520; }
+    .btn-undo { background: transparent; color: #555; border-color: #333; }
+
+    .ticket-toggles { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
+    .ticket-toggle { padding: 3px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; border: 1px solid; transition: all 0.15s; }
+    .ticket-toggle.paid { background: #1a2e1a; color: var(--green-light); border-color: var(--green); }
+    .ticket-toggle.unpaid { background: #2a2c35; color: #888; border-color: #333; }
+
+    .reminder-msg { margin-top: 8px; font-size: 11px; }
+
+    .empty-state { text-align: center; padding: 40px; color: #555; font-size: 14px; }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+<body>
+  <div class="bg-texture"></div>
+  <div class="container" id="app"></div>
+
+  <script>
+    // ═══════════════════════════════════════
+    //  CONFIG
+    // ═══════════════════════════════════════
+    const SUPABASE_URL = 'https://ckgppsxswmpzrngzpacv.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrZ3Bwc3hzd21wenJuZ3pwYWN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTU3NjUsImV4cCI6MjA4Nzg3MTc2NX0.ODkevSgXobwQKwfluwJdcJnflD5dH0NThxcbeOXW8Xo';
+    const EMAIL_FN_URL = SUPABASE_URL + '/functions/v1/send-raffle-email';
+    const TICKET_PRICE = 2;
+    const RAFFLE_NAME = "Merthyr RFC Under 10's Raffle";
+    const BANK = { name: 'Merthyr Rugby Club', sort: '30-54-66', acc: '18558460' };
+
+    // ═══════════════════════════════════════
+    //  SUPABASE HELPERS
+    // ═══════════════════════════════════════
+    const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
+
+    async function sbGet(table, query = '') {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { headers });
+      return r.json();
+    }
+    async function sbPost(table, data) {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, { method: 'POST', headers, body: JSON.stringify(data) });
+      return r.json();
+    }
+    async function sbPatch(table, query, data) {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { method: 'PATCH', headers, body: JSON.stringify(data) });
+      return r.json();
+    }
+
+    async function getNextTicket() {
+      const rows = await sbGet('raffle_config', 'key=eq.next_ticket_number');
+      return parseInt(rows[0]?.value || '1', 10);
+    }
+    async function setNextTicket(n) {
+      await sbPatch('raffle_config', 'key=eq.next_ticket_number', { value: String(n) });
+    }
+    async function getAllTickets() {
+      return sbGet('raffle_tickets', 'order=ticket_number.asc');
+    }
+    async function insertTickets(tickets) {
+      return sbPost('raffle_tickets', tickets);
+    }
+    async function updateTicketPaid(ticketNumber, paid) {
+      return sbPatch('raffle_tickets', `ticket_number=eq.${ticketNumber}`, { paid });
+    }
+    async function updateBuyerPaid(buyerName, paid) {
+      return sbPatch('raffle_tickets', `buyer_name=eq.${encodeURIComponent(buyerName)}`, { paid });
+    }
+
+    // ═══════════════════════════════════════
+    //  EMAIL
+    // ═══════════════════════════════════════
+    async function sendEmailViaEdge(to, subject, body) {
+      try {
+        const r = await fetch(EMAIL_FN_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ to, subject, body }),
+        });
+        const d = await r.json();
+        return d.success === true;
+      } catch { return false; }
+    }
+
+    function buildConfirmationEmail(name, ticketNums, total) {
+      const list = ticketNums.map(n => '#' + n).join(', ');
+      return {
+        subject: `Your ${RAFFLE_NAME} Tickets - ${list}`,
+        body: `Dear ${name},\n\nThank you for purchasing raffle tickets for the ${RAFFLE_NAME} - Under 10's Easter Raffle! 🐣🏉\n\nThe prize is a fantastic Easter Hamper! 🎁\n\nYOUR TICKET DETAILS\n${ticketNums.length} ticket${ticketNums.length > 1 ? 's' : ''}: ${list}\nTotal: £${total.toFixed(2)}\n\nHOW TO PAY\nPlease make a bank transfer with the following details:\n\nAccount Name: ${BANK.name}\nSort Code: ${BANK.sort}\nAccount Number: ${BANK.acc}\nAmount: £${total.toFixed(2)}\nReference: RAFFLE ${name}\n\nPlease ensure you use the reference "RAFFLE ${name}" so we can match your payment to your tickets.\n\nGood luck and thank you for supporting Merthyr RFC Under 10's!\n\nBest wishes,\nMerthyr RFC Under 10's`
+      };
+    }
+
+    function buildReminderEmail(name, ticketNums, total) {
+      const list = ticketNums.map(n => '#' + n).join(', ');
+      return {
+        subject: `Reminder: Payment needed for your ${RAFFLE_NAME} tickets`,
+        body: `Hi ${name},\n\nJust a friendly reminder that we haven't yet received payment for your raffle tickets.\n\nYOUR TICKETS\n${ticketNums.length} ticket${ticketNums.length > 1 ? 's' : ''}: ${list}\nTotal due: £${total.toFixed(2)}\n\nPAYMENT DETAILS\nAccount Name: ${BANK.name}\nSort Code: ${BANK.sort}\nAccount Number: ${BANK.acc}\nAmount: £${total.toFixed(2)}\nReference: RAFFLE ${name}\n\nPlease use the reference "RAFFLE ${name}" so we can match your payment.\n\nIf you've already paid, please ignore this reminder — it may take a little while for us to update our records.\n\nThank you for supporting Merthyr RFC Under 10's! 🏉\n\nBest wishes,\nMerthyr RFC Under 10's`
+      };
+    }
+
+    // ═══════════════════════════════════════
+    //  STATE
+    // ═══════════════════════════════════════
+    let currentView = 'customer'; // customer | admin
+    let allTickets = [];
+    let customerState = { step: 'form', name: '', email: '', qty: 1, assigned: [], emailSent: false };
+    let adminState = { search: '', tab: 'all', sending: null, reminderResults: {} };
+
+    // ═══════════════════════════════════════
+    //  RENDER ENGINE
+    // ═══════════════════════════════════════
+    const $ = id => document.getElementById(id);
+    const app = () => document.getElementById('app');
+
+    async function init() {
+      allTickets = await getAllTickets();
+      render();
+    }
+
+    function render() {
+      document.body.className = currentView === 'admin' ? 'admin-mode' : '';
+      if (currentView === 'customer') renderCustomer();
+      else renderAdmin();
+    }
+
+    // ═══════════════════════════════════════
+    //  CUSTOMER VIEW
+    // ═══════════════════════════════════════
+    function renderCustomer() {
+      const s = customerState;
+      const total = s.qty * TICKET_PRICE;
+      const soldCount = allTickets.length;
+
+      let content = `
+        <div style="text-align:right;margin-bottom:8px">
+          <button class="switch-link" onclick="switchToAdmin()">Admin →</button>
+        </div>
+        <div class="header fade-up">
+          <div style="font-size:48px;margin-bottom:8px">🏉</div>
+          <h1>Merthyr RFC</h1>
+          <h2>Under 10's Raffle</h2>
+          <div class="price-tag">£${TICKET_PRICE} per ticket</div>
+          <div class="desc-box">
+            <div style="font-size:28px;margin-bottom:4px">🐣🥚🍫</div>
+            <div style="font-size:15px;font-weight:600;color:#3a3a2a">Under 10's Easter Raffle</div>
+            <div style="font-size:13px;color:#777;margin-top:4px">Prize: <span class="prize">Easter Hamper</span> 🎁</div>
+            <div style="font-size:13px;color:#555;margin-top:6px;font-weight:500">Draw date: <span style="color:var(--text);font-weight:700">Wednesday 1st April 2026</span></div>
+          </div>
+        </div>`;
+
+      if (s.step === 'form') {
+        const canSubmit = s.name.trim() && s.email.trim() && s.email.includes('@');
+        content += `
+        <div class="card fade-up fade-up-d1">
+          <div class="field-group">
+            <label>Your Name</label>
+            <input type="text" id="inp-name" value="${esc(s.name)}" placeholder="e.g. John Davies" oninput="customerState.name=this.value">
+          </div>
+          <div class="field-group">
+            <label>Email Address</label>
+            <input type="email" id="inp-email" value="${esc(s.email)}" placeholder="john@example.com" oninput="customerState.email=this.value">
+            <div class="hint">We'll send your ticket confirmation here</div>
+          </div>
+          <div class="field-group">
+            <label>Number of Tickets</label>
+            <div class="qty-row">
+              <button class="qty-btn" onclick="changeQty(-1)">−</button>
+              <span class="qty-display mono">${s.qty}</span>
+              <button class="qty-btn" onclick="changeQty(1)">+</button>
+            </div>
+          </div>
+          <div class="total-bar">
+            <span style="font-size:14px;font-weight:500;color:var(--text-mid)">Total</span>
+            <span class="total-value mono">£${total.toFixed(2)}</span>
+          </div>
+          <button class="btn-primary" ${canSubmit ? '' : 'disabled'} onclick="buyTickets()">Get My Tickets</button>
+        </div>`;
+      } else if (s.step === 'sending') {
+        content += `
+        <div class="card fade-up fade-up-d1" style="text-align:center;padding:50px 24px">
+          <div class="spinner"></div>
+          <p style="color:var(--text-mid);margin-top:16px;font-size:15px">Reserving your tickets and sending confirmation...</p>
+        </div>`;
+      } else if (s.step === 'confirmation') {
+        const ticketTotal = s.assigned.length * TICKET_PRICE;
+        content += `
+        <div class="card fade-up fade-up-d1">
+          <div style="text-align:center;margin-bottom:20px">
+            <div class="check-circle">✓</div>
+            <h3 style="font-size:22px;font-weight:700">Tickets Reserved!</h3>
+          </div>
+          <div class="ticket-strip">
+            ${s.assigned.map(n => `<div class="ticket-chip mono">#${n}</div>`).join('')}
+          </div>
+          <div class="confirm-details">
+            <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value">${esc(s.name)}</span></div>
+            <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${esc(s.email)}</span></div>
+            <div class="detail-row"><span class="detail-label">Total</span><span class="detail-value" style="font-weight:700;color:var(--green)">£${ticketTotal.toFixed(2)}</span></div>
+          </div>
+          ${s.emailSent
+            ? `<div class="email-ok">📧 Confirmation email sent to ${esc(s.email)}</div>`
+            : `<div class="email-fail">⚠️ Couldn't send confirmation email. Please note your ticket numbers above.</div>`}
+          <div class="payment-box">
+            <h4>Payment Details</h4>
+            <div class="bank-row"><span class="bank-label">Account</span><span class="bank-value mono">${BANK.name}</span></div>
+            <div class="bank-row"><span class="bank-label">Sort Code</span><span class="bank-value mono">${BANK.sort}</span></div>
+            <div class="bank-row"><span class="bank-label">Acc No.</span><span class="bank-value mono">${BANK.acc}</span></div>
+            <div class="bank-row"><span class="bank-label">Reference</span><span class="bank-value mono" style="color:var(--red);font-weight:700">RAFFLE ${esc(s.name)}</span></div>
+          </div>
+          <button class="btn-outline" onclick="resetCustomer()">Buy More Tickets</button>
+        </div>`;
+      }
+
+      content += `
+        <div class="footer"><span>${soldCount} ticket${soldCount !== 1 ? 's' : ''} sold</span><span style="color:#ccc">·</span><span>Good luck! 🍀</span></div>
+        <div class="privacy-note">🔒 Your personal information (name and email) is only used to manage this raffle. Once the raffle has been drawn, all personal information will be deleted from our records.</div>`;
+      app().innerHTML = content;
+    }
+
+    function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+
+    function changeQty(delta) {
+      customerState.qty = Math.max(1, customerState.qty + delta);
+      render();
+    }
+
+    function resetCustomer() {
+      customerState = { step: 'form', name: '', email: '', qty: 1, assigned: [], emailSent: false };
+      render();
+    }
+
+    async function buyTickets() {
+      const s = customerState;
+      if (!s.name.trim() || !s.email.trim() || !s.email.includes('@')) return;
+      s.step = 'sending';
+      render();
+
+      const nextNum = await getNextTicket();
+      const tickets = Array.from({ length: s.qty }, (_, i) => nextNum + i);
+      s.assigned = tickets;
+
+      // Insert into DB
+      const rows = tickets.map(n => ({ ticket_number: n, buyer_name: s.name.trim(), buyer_email: s.email.trim(), paid: false }));
+      await insertTickets(rows);
+      await setNextTicket(nextNum + s.qty);
+
+      // Refresh
+      allTickets = await getAllTickets();
+
+      // Send email
+      const total = tickets.length * TICKET_PRICE;
+      const { subject, body } = buildConfirmationEmail(s.name.trim(), tickets, total);
+      s.emailSent = await sendEmailViaEdge(s.email.trim(), subject, body);
+
+      s.step = 'confirmation';
+      render();
+    }
+
+    // ═══════════════════════════════════════
+    //  ADMIN VIEW
+    // ═══════════════════════════════════════
+    function renderAdmin() {
+      const s = adminState;
+      const totalSold = allTickets.length;
+      const totalPaid = allTickets.filter(t => t.paid).length;
+      const totalUnpaid = totalSold - totalPaid;
+      const revenue = totalSold * TICKET_PRICE;
+      const collected = totalPaid * TICKET_PRICE;
+      const outstanding = totalUnpaid * TICKET_PRICE;
+      const pctPaid = totalSold > 0 ? Math.round((totalPaid / totalSold) * 100) : 0;
+
+      // Group by buyer
+      const buyers = {};
+      allTickets.forEach(t => {
+        if (!buyers[t.buyer_name]) buyers[t.buyer_name] = { email: t.buyer_email, tickets: [], allPaid: true };
+        buyers[t.buyer_name].tickets.push(t);
+        if (!t.paid) buyers[t.buyer_name].allPaid = false;
+      });
+
+      const filteredBuyers = Object.entries(buyers).filter(([name, b]) => {
+        const match = name.toLowerCase().includes(s.search.toLowerCase()) || b.email.toLowerCase().includes(s.search.toLowerCase());
+        if (s.tab === 'paid') return match && b.allPaid;
+        if (s.tab === 'unpaid') return match && !b.allPaid;
+        return match;
+      });
+
+      const allCount = Object.keys(buyers).length;
+      const unpaidCount = Object.entries(buyers).filter(([, b]) => !b.allPaid).length;
+      const paidCount = Object.entries(buyers).filter(([, b]) => b.allPaid).length;
+
+      let html = `
+        <div class="admin-header">
+          <div>
+            <h1>🏉 Raffle Admin</h1>
+            <p>Merthyr RFC Under 10's</p>
+          </div>
+          <button class="switch-link" style="color:var(--green-light)" onclick="switchToCustomer()">← Back to shop</button>
+        </div>
+
+        <div class="stats-grid">
+          <div class="stat-card" style="border-left:3px solid var(--green-light)">
+            <div class="stat-label mono">Sold</div>
+            <div class="stat-val mono" style="color:var(--green-light)">${totalSold}</div>
+            <div class="stat-sub">£${revenue.toFixed(2)} total</div>
+          </div>
+          <div class="stat-card" style="border-left:3px solid var(--green)">
+            <div class="stat-label mono">Paid</div>
+            <div class="stat-val mono" style="color:var(--green)">${totalPaid}</div>
+            <div class="stat-sub">£${collected.toFixed(2)} collected</div>
+          </div>
+          <div class="stat-card" style="border-left:3px solid ${totalUnpaid > 0 ? 'var(--orange)' : '#555'}">
+            <div class="stat-label mono">Unpaid</div>
+            <div class="stat-val mono" style="color:${totalUnpaid > 0 ? 'var(--orange)' : '#555'}">${totalUnpaid}</div>
+            <div class="stat-sub">£${outstanding.toFixed(2)} outstanding</div>
+          </div>
+        </div>`;
+
+      if (totalSold > 0) {
+        html += `
+        <div class="progress-bar-wrap">
+          <div class="progress-meta"><span>Payment progress</span><span>${pctPaid}%</span></div>
+          <div class="progress-track"><div class="progress-fill" style="width:${pctPaid}%"></div></div>
+        </div>`;
+      }
+
+      html += `
+        <div class="toolbar">
+          <input type="text" placeholder="Search name or email..." value="${esc(s.search)}" oninput="adminState.search=this.value;render()">
+          ${totalUnpaid > 0 ? `<button class="btn-remind-all" onclick="remindAll()">📧 Remind All Unpaid</button>` : ''}
+        </div>
+        <div class="tabs">
+          <button class="tab-btn ${s.tab === 'all' ? 'active' : ''}" onclick="adminState.tab='all';render()">All (${allCount})</button>
+          <button class="tab-btn ${s.tab === 'unpaid' ? 'active' : ''}" onclick="adminState.tab='unpaid';render()">Unpaid (${unpaidCount})</button>
+          <button class="tab-btn ${s.tab === 'paid' ? 'active' : ''}" onclick="adminState.tab='paid';render()">Paid (${paidCount})</button>
+        </div>`;
+
+      if (filteredBuyers.length === 0) {
+        html += `<div class="empty-state">${totalSold === 0 ? 'No tickets sold yet' : 'No matching buyers'}</div>`;
+      } else {
+        filteredBuyers.forEach(([name, buyer]) => {
+          const unpaid = buyer.tickets.filter(t => !t.paid);
+          const paid = buyer.tickets.filter(t => t.paid);
+          const bTotal = buyer.tickets.length * TICKET_PRICE;
+          const bPaid = paid.length * TICKET_PRICE;
+          const isSending = s.sending === name;
+          const reminderResult = s.reminderResults[name];
+
+          html += `
+          <div class="buyer-card" style="border-left:3px solid ${buyer.allPaid ? 'var(--green)' : 'var(--orange)'}">
+            <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
+              <div>
+                <div class="name">${esc(name)}</div>
+                <div class="email">${esc(buyer.email)}</div>
+                <div class="tickets-info mono">Tickets: ${buyer.tickets.map(t => '#' + t.ticket_number).join(', ')}</div>
+                <div class="paid-info">£${bPaid.toFixed(2)} / £${bTotal.toFixed(2)} paid</div>
+              </div>
+              <div>
+                ${buyer.allPaid
+                  ? '<span class="badge badge-paid">✓ Paid</span>'
+                  : `<span class="badge badge-unpaid">${unpaid.length} unpaid</span>`}
+              </div>
+            </div>
+            <div class="action-row">
+              ${!buyer.allPaid ? `
+                <button class="btn-sm btn-mark-paid" onclick="markBuyerPaid('${esc(name)}',true)">Mark All Paid</button>
+                <button class="btn-sm btn-send-reminder" onclick="sendReminder('${esc(name)}')" ${isSending ? 'disabled' : ''}>${isSending ? 'Sending...' : 'Send Reminder'}</button>
+              ` : `
+                <button class="btn-sm btn-undo" onclick="markBuyerPaid('${esc(name)}',false)">Undo Paid</button>
+              `}
+            </div>
+            ${reminderResult !== undefined ? `<div class="reminder-msg" style="color:${reminderResult ? 'var(--green-light)' : 'var(--orange)'}">${reminderResult ? '✓ Reminder sent' : '⚠ Failed to send'}</div>` : ''}
+            ${buyer.tickets.length > 1 ? `
+            <div class="ticket-toggles">
+              ${buyer.tickets.map(t => `
+                <button class="ticket-toggle mono ${t.paid ? 'paid' : 'unpaid'}" onclick="toggleTicket(${t.ticket_number},${!t.paid})">
+                  #${t.ticket_number} ${t.paid ? '✓' : ''}
+                </button>
+              `).join('')}
+            </div>` : ''}
+          </div>`;
+        });
+      }
+
+      app().innerHTML = html;
+    }
+
+    // ═══════════════════════════════════════
+    //  ADMIN ACTIONS
+    // ═══════════════════════════════════════
+    async function toggleTicket(num, paid) {
+      await updateTicketPaid(num, paid);
+      allTickets = await getAllTickets();
+      render();
+    }
+
+    async function markBuyerPaid(name, paid) {
+      await updateBuyerPaid(name, paid);
+      allTickets = await getAllTickets();
+      render();
+    }
+
+    async function sendReminder(name) {
+      adminState.sending = name;
+      render();
+
+      const buyers = {};
+      allTickets.forEach(t => {
+        if (!buyers[t.buyer_name]) buyers[t.buyer_name] = { email: t.buyer_email, tickets: [] };
+        buyers[t.buyer_name].tickets.push(t);
+      });
+
+      const buyer = buyers[name];
+      if (!buyer) { adminState.sending = null; render(); return; }
+
+      const unpaidNums = buyer.tickets.filter(t => !t.paid).map(t => t.ticket_number);
+      const total = unpaidNums.length * TICKET_PRICE;
+      const { subject, body } = buildReminderEmail(name, unpaidNums, total);
+      const ok = await sendEmailViaEdge(buyer.email, subject, body);
+
+      adminState.sending = null;
+      adminState.reminderResults[name] = ok;
+      render();
+      setTimeout(() => { delete adminState.reminderResults[name]; render(); }, 4000);
+    }
+
+    async function remindAll() {
+      const buyers = {};
+      allTickets.forEach(t => {
+        if (!buyers[t.buyer_name]) buyers[t.buyer_name] = { email: t.buyer_email, tickets: [], allPaid: true };
+        buyers[t.buyer_name].tickets.push(t);
+        if (!t.paid) buyers[t.buyer_name].allPaid = false;
+      });
+      const unpaidNames = Object.entries(buyers).filter(([, b]) => !b.allPaid).map(([n]) => n);
+      for (const name of unpaidNames) {
+        await sendReminder(name);
+      }
+    }
+
+    // ═══════════════════════════════════════
+    //  NAVIGATION
+    // ═══════════════════════════════════════
+    function switchToAdmin() { currentView = 'admin'; init(); }
+    async function switchToCustomer() { currentView = 'customer'; resetCustomer(); allTickets = await getAllTickets(); render(); }
+
+    // Start
+    init();
+  </script>
+</body>
+</html>
