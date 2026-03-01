@@ -299,16 +299,25 @@
     // ═══════════════════════════════════════
     //  EMAIL
     // ═══════════════════════════════════════
-    async function sendEmailViaEdge(to, subject, body) {
+    async function sendEmailViaEdge(to, subject, emailBody) {
       try {
         const r = await fetch(EMAIL_FN_URL, {
           method: 'POST',
           headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
-          body: JSON.stringify({ to, subject, body }),
+          body: JSON.stringify({ to, subject, body: emailBody }),
         });
+        if (!r.ok) {
+          const text = await r.text();
+          console.error('Email send failed:', r.status, text);
+          return false;
+        }
         const d = await r.json();
+        if (d.success !== true) console.error('Email send returned:', d);
         return d.success === true;
-      } catch { return false; }
+      } catch (err) {
+        console.error('Email send error:', err);
+        return false;
+      }
     }
 
     function buildConfirmationEmail(name, ticketNums, total) {
@@ -663,6 +672,8 @@
 
     function closeDraw() {
       if (drawState.animId) cancelAnimationFrame(drawState.animId);
+      const overlay = document.getElementById('draw-overlay');
+      if (overlay) overlay.remove();
       drawState = { open: false, spinning: false, winner: null, angle: 0, animId: null };
       render();
     }
