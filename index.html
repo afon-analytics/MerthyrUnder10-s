@@ -178,6 +178,18 @@
     .empty-state { text-align: center; padding: 40px; color: #555; font-size: 14px; }
 
     .hidden { display: none !important; }
+
+    /* --- Admin Login --- */
+    .login-card { max-width: 380px; margin: 80px auto 0; text-align: center; }
+    .login-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .login-card p { font-size: 14px; color: var(--text-mid); margin-bottom: 24px; }
+    .login-card input[type="password"] {
+      width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px;
+      font-size: 15px; font-family: 'Outfit', sans-serif; color: var(--text);
+      background: var(--input-bg); outline: none; transition: border-color 0.2s; margin-bottom: 16px;
+    }
+    .login-card input[type="password"]:focus { border-color: var(--green); }
+    .login-error { color: var(--red); font-size: 13px; margin-bottom: 12px; font-weight: 500; }
   </style>
 </head>
 <body>
@@ -194,6 +206,7 @@
     const TICKET_PRICE = 2;
     const RAFFLE_NAME = "Merthyr RFC Under 10's Raffle";
     const BANK = { name: 'Merthyr Rugby Club', sort: '30-54-66', acc: '18558460' };
+    const ADMIN_PIN = 'merthyr2026';
 
     // ═══════════════════════════════════════
     //  SUPABASE HELPERS
@@ -267,8 +280,10 @@
     // ═══════════════════════════════════════
     //  STATE
     // ═══════════════════════════════════════
-    let currentView = 'customer'; // customer | admin
+    let currentView = 'customer'; // customer | admin-login | admin
     let allTickets = [];
+    let adminLoggedIn = false;
+    let loginError = false;
     let customerState = { step: 'form', name: '', email: '', qty: 1, assigned: [], emailSent: false };
     let adminState = { search: '', tab: 'all', sending: null, reminderResults: {} };
 
@@ -284,8 +299,9 @@
     }
 
     function render() {
-      document.body.className = currentView === 'admin' ? 'admin-mode' : '';
+      document.body.className = (currentView === 'admin' || currentView === 'admin-login') ? 'admin-mode' : '';
       if (currentView === 'customer') renderCustomer();
+      else if (currentView === 'admin-login') renderAdminLogin();
       else renderAdmin();
     }
 
@@ -295,8 +311,6 @@
     function renderCustomer() {
       const s = customerState;
       const total = s.qty * TICKET_PRICE;
-      const soldCount = allTickets.length;
-
       let content = `
         <div style="text-align:right;margin-bottom:8px">
           <button class="switch-link" onclick="switchToAdmin()">Admin →</button>
@@ -378,7 +392,7 @@
       }
 
       content += `
-        <div class="footer"><span>${soldCount} ticket${soldCount !== 1 ? 's' : ''} sold</span><span style="color:#ccc">·</span><span>Good luck! 🍀</span></div>
+        <div class="footer"><span>Good luck! 🍀</span></div>
         <div class="privacy-note">🔒 Your personal information (name and email) is only used to manage this raffle. Once the raffle has been drawn, all personal information will be deleted from our records.</div>`;
       app().innerHTML = content;
     }
@@ -420,6 +434,38 @@
 
       s.step = 'confirmation';
       render();
+    }
+
+    // ═══════════════════════════════════════
+    //  ADMIN LOGIN
+    // ═══════════════════════════════════════
+    function renderAdminLogin() {
+      app().innerHTML = `
+        <div class="login-card card fade-up">
+          <div style="font-size:40px;margin-bottom:12px">🔒</div>
+          <h2>Admin Access</h2>
+          <p>Enter the admin password to continue</p>
+          ${loginError ? '<div class="login-error">Incorrect password. Please try again.</div>' : ''}
+          <input type="password" id="admin-pin" placeholder="Enter password" onkeydown="if(event.key==='Enter')attemptLogin()">
+          <button class="btn-primary" onclick="attemptLogin()">Log In</button>
+          <div style="margin-top:16px">
+            <button class="switch-link" style="color:var(--green-light)" onclick="switchToCustomer()">← Back to shop</button>
+          </div>
+        </div>`;
+      document.getElementById('admin-pin').focus();
+    }
+
+    function attemptLogin() {
+      const pin = document.getElementById('admin-pin').value;
+      if (pin === ADMIN_PIN) {
+        adminLoggedIn = true;
+        loginError = false;
+        currentView = 'admin';
+        init();
+      } else {
+        loginError = true;
+        render();
+      }
     }
 
     // ═══════════════════════════════════════
@@ -605,7 +651,10 @@
     // ═══════════════════════════════════════
     //  NAVIGATION
     // ═══════════════════════════════════════
-    function switchToAdmin() { currentView = 'admin'; init(); }
+    function switchToAdmin() {
+      if (adminLoggedIn) { currentView = 'admin'; init(); }
+      else { currentView = 'admin-login'; loginError = false; render(); }
+    }
     async function switchToCustomer() { currentView = 'customer'; resetCustomer(); allTickets = await getAllTickets(); render(); }
 
     // Start
