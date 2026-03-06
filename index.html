@@ -58,7 +58,7 @@
       border: 2px solid var(--green); border-radius: 10px; font-size: 15px; font-weight: 600;
       font-family: 'Outfit', sans-serif; cursor: pointer;
     }
-    input[type="text"], input[type="email"] {
+    input[type="text"] {
       width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px;
       font-size: 15px; font-family: 'Outfit', sans-serif; color: var(--text);
       background: var(--input-bg); outline: none; transition: border-color 0.2s;
@@ -127,7 +127,7 @@
     .tab-btn.active { background: #2a2c35; color: #e8e6e1; border-color: #444; }
     .buyer-card { background: var(--card-dark); border-radius: 10px; padding: 16px; margin-bottom: 8px; }
     .buyer-card .name { font-size: 15px; font-weight: 600; color: #e8e6e1; }
-    .buyer-card .email-text { font-size: 12px; color: #666; margin-top: 2px; }
+    .buyer-card .contact-text { font-size: 12px; color: #666; margin-top: 2px; }
     .buyer-card .tickets-info { font-size: 12px; color: #555; margin-top: 4px; }
     .buyer-card .paid-info { font-size: 12px; color: #888; margin-top: 2px; }
     .badge { font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600; display: inline-block; }
@@ -143,8 +143,10 @@
     .ticket-toggle.unpaid { background: #2a2c35; color: #888; border-color: #333; }
     .empty-state { text-align: center; padding: 40px; color: #555; font-size: 14px; }
     .delete-all-wrap { margin-top: 32px; padding-top: 20px; border-top: 1px solid #2a2c35; text-align: center; }
-    .btn-delete-all { padding: 10px 20px; background: #2e1414; color: #e85a5a; border: 1px solid #5a2020; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; }
+    .btn-delete-all, .btn-delete-unpaid { padding: 10px 20px; background: #2e1414; color: #e85a5a; border: 1px solid #5a2020; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; }
+    .btn-delete-unpaid { background: #2e2014; color: var(--orange); border-color: #5a3a20; margin-bottom: 10px; }
     .btn-delete-all:hover { background: #3e1a1a; }
+    .btn-delete-unpaid:hover { background: #3e2a1a; }
     /* --- Admin Login --- */
     .login-card { max-width: 380px; margin: 80px auto 0; text-align: center; }
     .login-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
@@ -205,6 +207,9 @@
     .winner-name { font-size: 24px; font-weight: 700; color: #e8e6e1; margin-top: 4px; }
     .winner-label { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
     .confetti-burst { font-size: 36px; margin-bottom: 8px; }
+    .draw-toggle { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+    .draw-toggle label { font-size: 13px; color: #aaa; cursor: pointer; user-select: none; }
+    .draw-toggle input[type="checkbox"] { accent-color: var(--green); width: 18px; height: 18px; cursor: pointer; }
   </style>
 </head>
 <body>
@@ -265,9 +270,9 @@
     let allTickets = [];
     let adminLoggedIn = false;
     let loginError = false;
-    let customerState = { step: 'form', name: '', email: '', qty: 1, assigned: [] };
+    let customerState = { step: 'form', name: '', contact: '', qty: 1, assigned: [] };
     let adminState = { search: '', tab: 'all' };
-    let drawState = { open: false, spinning: false, winner: null, angle: 0, animId: null };
+    let drawState = { open: false, spinning: false, winner: null, angle: 0, animId: null, paidOnly: false };
     function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
     const app = () => document.getElementById('app');
     async function init() {
@@ -286,7 +291,6 @@
     function renderCustomer() {
       const s = customerState;
       const total = s.qty * TICKET_PRICE;
-      const soldCount = allTickets.length;
       let html = `
         <div style="text-align:right;margin-bottom:8px">
           <button class="switch-link" onclick="switchToAdmin()">Admin →</button>
@@ -304,7 +308,7 @@
           </div>
         </div>`;
       if (s.step === 'form') {
-        const canSubmit = s.name.trim() && s.email.trim() && s.email.includes('@');
+        const canSubmit = s.name.trim() && s.contact.trim();
         html += `
         <div class="card fade-up" style="animation-delay:0.08s">
           <div class="field-group">
@@ -312,9 +316,9 @@
             <input type="text" id="inp-name" value="${esc(s.name)}" placeholder="e.g. John Davies" oninput="customerState.name=this.value;updateSubmitBtn()">
           </div>
           <div class="field-group">
-            <label>Email Address</label>
-            <input type="email" id="inp-email" value="${esc(s.email)}" placeholder="john@example.com" oninput="customerState.email=this.value;updateSubmitBtn()">
-            <div class="hint">So we can contact you if you win</div>
+            <label>How is it best to contact you if you win?</label>
+            <input type="text" id="inp-contact" value="${esc(s.contact)}" placeholder="e.g. Phone, Facebook, email..." oninput="customerState.contact=this.value;updateSubmitBtn()">
+            <div class="hint">Phone number, social media, email — whatever works for you</div>
           </div>
           <div class="field-group">
             <label>Number of Tickets</label>
@@ -353,7 +357,7 @@
           </div>
           <div class="confirm-details">
             <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value">${esc(s.name)}</span></div>
-            <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${esc(s.email)}</span></div>
+            <div class="detail-row"><span class="detail-label">Contact</span><span class="detail-value">${esc(s.contact)}</span></div>
             <div class="detail-row"><span class="detail-label">Tickets</span><span class="detail-value">${s.assigned.length} × £${TICKET_PRICE}</span></div>
             <div class="detail-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:8px">
               <span class="detail-label" style="font-weight:600;color:#444">Total to pay</span>
@@ -379,15 +383,15 @@
         </div>`;
       }
       html += `
-        <div class="footer"><span>${soldCount} ticket${soldCount !== 1 ? 's' : ''} sold</span><span style="color:#ccc">·</span><span>Good luck! 🍀</span></div>
-        <div class="privacy-note">🔒 Your personal information (name and email) is only used to manage this raffle. Once the raffle has been drawn, all personal information will be deleted from our records.</div>`;
+        <div class="footer"><span>Good luck! 🍀</span></div>
+        <div class="privacy-note">🔒 Your personal information is only used to manage this raffle. Once the raffle has been drawn, all personal information will be deleted from our records.</div>`;
       app().innerHTML = html;
     }
     function updateSubmitBtn() {
       const btn = document.getElementById('submit-btn');
       if (btn) {
         const s = customerState;
-        btn.disabled = !(s.name.trim() && s.email.trim() && s.email.includes('@'));
+        btn.disabled = !(s.name.trim() && s.contact.trim());
       }
     }
     function changeQty(delta) {
@@ -395,18 +399,18 @@
       render();
     }
     function resetCustomer() {
-      customerState = { step: 'form', name: '', email: '', qty: 1, assigned: [] };
+      customerState = { step: 'form', name: '', contact: '', qty: 1, assigned: [] };
       render();
     }
     async function buyTickets() {
       const s = customerState;
-      if (!s.name.trim() || !s.email.trim() || !s.email.includes('@')) return;
+      if (!s.name.trim() || !s.contact.trim()) return;
       s.step = 'sending';
       render();
       const nextNum = await getNextTicket();
       const tickets = Array.from({ length: s.qty }, (_, i) => nextNum + i);
       s.assigned = tickets;
-      const rows = tickets.map(n => ({ ticket_number: n, buyer_name: s.name.trim(), buyer_email: s.email.trim(), paid: false }));
+      const rows = tickets.map(n => ({ ticket_number: n, buyer_name: s.name.trim(), buyer_email: s.contact.trim(), paid: false }));
       await insertTickets(rows);
       await setNextTicket(nextNum + s.qty);
       allTickets = await getAllTickets();
@@ -525,7 +529,7 @@
             <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
               <div>
                 <div class="name">${esc(name)}</div>
-                <div class="email-text">${esc(buyer.email)}</div>
+                <div class="contact-text">Contact: ${esc(buyer.email)}</div>
                 <div class="tickets-info mono">Tickets: ${buyer.tickets.map(t => '#' + t.ticket_number).join(', ')}</div>
                 <div class="paid-info">£${bPaid.toFixed(2)} / £${bTotal.toFixed(2)} paid</div>
               </div>
@@ -554,6 +558,7 @@
       if (totalSold > 0) {
         html += `
         <div class="delete-all-wrap">
+          ${totalUnpaid > 0 ? `<button class="btn-delete-unpaid" onclick="confirmDeleteUnpaid()">⚠️ Delete Unpaid Tickets (${totalUnpaid})</button><br>` : ''}
           <p style="font-size:12px;color:#555;margin-bottom:10px">After the draw, delete all personal data as promised</p>
           <button class="btn-delete-all" onclick="confirmDeleteAll()">🗑️ Delete All Raffle Data</button>
         </div>`;
@@ -566,15 +571,24 @@
     //  RAFFLE DRAW WHEEL
     // ═══════════════════════════════════════
     const WHEEL_COLORS = ['#2d6a30','#4ecdc4','#e8834a','#b5442d','#3a7d44','#36b5a0','#d4703a','#8b3622','#1e5631','#2ea89a','#c45e2a','#6e2a1a'];
+    function getDrawTickets() {
+      return drawState.paidOnly ? allTickets.filter(t => t.paid) : allTickets;
+    }
+    function togglePaidOnly() {
+      drawState.paidOnly = !drawState.paidOnly;
+      const oldOverlay = document.getElementById('draw-overlay');
+      if (oldOverlay) oldOverlay.remove();
+      renderDrawOverlay();
+    }
     function openDraw() {
-      drawState = { open: true, spinning: false, winner: null, angle: 0, animId: null };
+      drawState = { open: true, spinning: false, winner: null, angle: 0, animId: null, paidOnly: false };
       renderAdmin();
     }
     function closeDraw() {
       if (drawState.animId) cancelAnimationFrame(drawState.animId);
       const overlay = document.getElementById('draw-overlay');
       if (overlay) overlay.remove();
-      drawState = { open: false, spinning: false, winner: null, angle: 0, animId: null };
+      drawState = { open: false, spinning: false, winner: null, angle: 0, animId: null, paidOnly: false };
       render();
     }
     function renderDrawOverlay() {
@@ -582,10 +596,19 @@
       overlay.className = 'draw-overlay';
       overlay.id = 'draw-overlay';
       const w = drawState.winner;
+      const drawTickets = getDrawTickets();
       const winnerTicket = w ? allTickets.find(t => t.ticket_number === w) : null;
+      const paidCount = allTickets.filter(t => t.paid).length;
       overlay.innerHTML = `
         <button class="draw-close" onclick="closeDraw()">&times;</button>
         <div class="draw-title">🏉 Easter Raffle Draw</div>
+        <div class="draw-toggle">
+          <input type="checkbox" id="paid-only-toggle" ${drawState.paidOnly ? 'checked' : ''} onchange="togglePaidOnly()" ${drawState.spinning ? 'disabled' : ''}>
+          <label for="paid-only-toggle">Paid tickets only (${paidCount} of ${allTickets.length})</label>
+        </div>
+        ${drawTickets.length === 0 ? `
+          <div style="color:#888;font-size:15px;margin-top:20px;text-align:center">No ${drawState.paidOnly ? 'paid ' : ''}tickets to draw from</div>
+        ` : `
         <div class="wheel-wrap">
           <div class="wheel-pointer"></div>
           <canvas class="wheel-canvas" id="wheel-canvas"></canvas>
@@ -603,6 +626,7 @@
           </button>
         `}
         ${w ? `<button class="btn-spin" style="margin-top:12px;background:#333;font-size:14px;padding:10px 32px" onclick="openDraw()">Spin Again</button>` : ''}
+        `}
       `;
       document.body.appendChild(overlay);
       drawWheel();
@@ -619,7 +643,8 @@
       const cx = rect.width / 2;
       const cy = rect.height / 2;
       const r = Math.min(cx, cy) - 4;
-      const tickets = allTickets.map(t => t.ticket_number);
+      const drawTickets = getDrawTickets();
+      const tickets = drawTickets.map(t => t.ticket_number);
       const n = tickets.length;
       if (n === 0) return;
       const sliceAngle = (2 * Math.PI) / n;
@@ -657,11 +682,12 @@
       ctx.fill();
     }
     function spinWheel() {
-      if (drawState.spinning || allTickets.length === 0) return;
+      const drawTickets = getDrawTickets();
+      if (drawState.spinning || drawTickets.length === 0) return;
       drawState.spinning = true;
       drawState.winner = null;
-      const winnerIdx = Math.floor(Math.random() * allTickets.length);
-      const n = allTickets.length;
+      const winnerIdx = Math.floor(Math.random() * drawTickets.length);
+      const n = drawTickets.length;
       const sliceAngle = (2 * Math.PI) / n;
       const fullSpins = 5 + Math.floor(Math.random() * 3);
       const targetAngle = -(winnerIdx * sliceAngle) + (fullSpins * 2 * Math.PI) + (Math.random() - 0.5) * sliceAngle * 0.5;
@@ -681,7 +707,7 @@
           drawState.animId = requestAnimationFrame(animate);
         } else {
           drawState.spinning = false;
-          drawState.winner = allTickets[winnerIdx].ticket_number;
+          drawState.winner = drawTickets[winnerIdx].ticket_number;
           drawState.animId = null;
           const oldOverlay = document.getElementById('draw-overlay');
           if (oldOverlay) oldOverlay.remove();
@@ -697,6 +723,13 @@
     }
     async function markBuyerPaid(name, paid) {
       await updateBuyerPaid(name, paid);
+      allTickets = await getAllTickets();
+      render();
+    }
+    async function confirmDeleteUnpaid() {
+      const unpaidCount = allTickets.filter(t => !t.paid).length;
+      if (!confirm(`Delete ${unpaidCount} unpaid ticket${unpaidCount !== 1 ? 's' : ''}? This cannot be undone.`)) return;
+      await sbDelete('raffle_tickets', 'paid=eq.false');
       allTickets = await getAllTickets();
       render();
     }
