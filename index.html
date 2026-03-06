@@ -626,7 +626,12 @@
             ${drawState.spinning ? 'Spinning...' : 'Spin the Wheel!'}
           </button>
         `}
-        ${w ? `<button class="btn-spin" style="margin-top:12px;background:#333;font-size:14px;padding:10px 32px" onclick="openDraw()">Spin Again</button>` : ''}
+        ${w ? `
+          <div style="display:flex;gap:10px;margin-top:12px;flex-wrap:wrap;justify-content:center">
+            <button class="btn-spin" style="background:#333;font-size:14px;padding:10px 32px" onclick="openDraw()">Spin Again</button>
+            <button class="btn-spin" style="background:var(--red);font-size:14px;padding:10px 32px" onclick="closeDraw()">Close</button>
+          </div>
+        ` : ''}
         `}
       `;
       document.body.appendChild(overlay);
