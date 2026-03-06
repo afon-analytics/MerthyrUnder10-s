@@ -145,6 +145,66 @@
     .delete-all-wrap { margin-top: 32px; padding-top: 20px; border-top: 1px solid #2a2c35; text-align: center; }
     .btn-delete-all { padding: 10px 20px; background: #2e1414; color: #e85a5a; border: 1px solid #5a2020; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; }
     .btn-delete-all:hover { background: #3e1a1a; }
+    /* --- Admin Login --- */
+    .login-card { max-width: 380px; margin: 80px auto 0; text-align: center; }
+    .login-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+    .login-card p { font-size: 14px; color: var(--text-mid); margin-bottom: 24px; }
+    .login-card input[type="password"] {
+      width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px;
+      font-size: 15px; font-family: 'Outfit', sans-serif; color: var(--text);
+      background: var(--input-bg); outline: none; transition: border-color 0.2s; margin-bottom: 16px;
+    }
+    .login-card input[type="password"]:focus { border-color: var(--green); }
+    .login-error { color: var(--red); font-size: 13px; margin-bottom: 12px; font-weight: 500; }
+    /* --- Raffle Draw --- */
+    .draw-overlay {
+      position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.92);
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      padding: 20px;
+    }
+    .draw-close {
+      position: absolute; top: 16px; right: 20px; background: none; border: none;
+      color: #666; font-size: 28px; cursor: pointer; font-family: 'Outfit', sans-serif;
+      line-height: 1; padding: 4px 8px;
+    }
+    .draw-close:hover { color: #aaa; }
+    .draw-title { color: #e8e6e1; font-size: 22px; font-weight: 800; margin-bottom: 16px; text-align: center; }
+    .wheel-wrap {
+      position: relative; width: 320px; height: 320px; margin: 0 auto;
+    }
+    @media (min-width: 480px) { .wheel-wrap { width: 380px; height: 380px; } }
+    .wheel-pointer {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%); z-index: 2;
+      width: 0; height: 0;
+      border-left: 14px solid transparent; border-right: 14px solid transparent;
+      border-top: 28px solid var(--red);
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
+    }
+    .wheel-canvas { width: 100%; height: 100%; }
+    .btn-spin {
+      margin-top: 24px; padding: 14px 48px; background: var(--green); color: #fff; border: none;
+      border-radius: 10px; font-size: 18px; font-weight: 700; font-family: 'Outfit', sans-serif;
+      cursor: pointer; transition: opacity 0.2s, transform 0.1s;
+    }
+    .btn-spin:hover { opacity: 0.9; }
+    .btn-spin:active { transform: scale(0.985); }
+    .btn-spin:disabled { opacity: 0.35; cursor: default; }
+    .draw-btn {
+      padding: 10px 18px; background: linear-gradient(135deg, var(--green), var(--green-light));
+      color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: 'Outfit', sans-serif; white-space: nowrap;
+    }
+    .draw-btn:hover { opacity: 0.9; }
+    .winner-reveal {
+      margin-top: 24px; text-align: center; animation: fadeUp 0.5s ease both;
+    }
+    .winner-ticket {
+      font-size: 48px; font-weight: 800; color: var(--green-light);
+      font-family: 'JetBrains Mono', monospace;
+    }
+    .winner-name { font-size: 24px; font-weight: 700; color: #e8e6e1; margin-top: 4px; }
+    .winner-label { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
+    .confetti-burst { font-size: 36px; margin-bottom: 8px; }
   </style>
 </head>
 <body>
@@ -158,6 +218,7 @@
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrZ3Bwc3hzd21wenJuZ3pwYWN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTU3NjUsImV4cCI6MjA4Nzg3MTc2NX0.ODkevSgXobwQKwfluwJdcJnflD5dH0NThxcbeOXW8Xo';
     const TICKET_PRICE = 2;
     const BANK = { name: 'Merthyr Rugby Club', sort: '30-54-66', acc: '18558460' };
+    const ADMIN_PIN = 'merthyr2026';
     // ═══════════════════════════════════════
     //  SUPABASE HELPERS
     // ═══════════════════════════════════════
@@ -200,10 +261,13 @@
     // ═══════════════════════════════════════
     //  STATE
     // ═══════════════════════════════════════
-    let currentView = 'customer';
+    let currentView = 'customer'; // customer | admin-login | admin
     let allTickets = [];
+    let adminLoggedIn = false;
+    let loginError = false;
     let customerState = { step: 'form', name: '', email: '', qty: 1, assigned: [] };
     let adminState = { search: '', tab: 'all' };
+    let drawState = { open: false, spinning: false, winner: null, angle: 0, animId: null };
     function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
     const app = () => document.getElementById('app');
     async function init() {
@@ -211,8 +275,9 @@
       render();
     }
     function render() {
-      document.body.className = currentView === 'admin' ? 'admin-mode' : '';
+      document.body.className = (currentView === 'admin' || currentView === 'admin-login') ? 'admin-mode' : '';
       if (currentView === 'customer') renderCustomer();
+      else if (currentView === 'admin-login') renderAdminLogin();
       else renderAdmin();
     }
     // ═══════════════════════════════════════
@@ -349,6 +414,36 @@
       render();
     }
     // ═══════════════════════════════════════
+    //  ADMIN LOGIN
+    // ═══════════════════════════════════════
+    function renderAdminLogin() {
+      app().innerHTML = `
+        <div class="login-card card fade-up">
+          <div style="font-size:40px;margin-bottom:12px">🔒</div>
+          <h2>Admin Access</h2>
+          <p>Enter the admin password to continue</p>
+          ${loginError ? '<div class="login-error">Incorrect password. Please try again.</div>' : ''}
+          <input type="password" id="admin-pin" placeholder="Enter password" onkeydown="if(event.key==='Enter')attemptLogin()">
+          <button class="btn-primary" onclick="attemptLogin()">Log In</button>
+          <div style="margin-top:16px">
+            <button class="switch-link" style="color:var(--green-light)" onclick="switchToCustomer()">← Back to shop</button>
+          </div>
+        </div>`;
+      document.getElementById('admin-pin').focus();
+    }
+    function attemptLogin() {
+      const pin = document.getElementById('admin-pin').value;
+      if (pin === ADMIN_PIN) {
+        adminLoggedIn = true;
+        loginError = false;
+        currentView = 'admin';
+        init();
+      } else {
+        loginError = true;
+        render();
+      }
+    }
+    // ═══════════════════════════════════════
     //  ADMIN VIEW
     // ═══════════════════════════════════════
     function renderAdmin() {
@@ -410,6 +505,7 @@
       html += `
         <div class="toolbar">
           <input type="text" placeholder="Search name or email..." value="${esc(s.search)}" oninput="adminState.search=this.value;render()">
+          ${totalSold > 0 ? `<button class="draw-btn" onclick="openDraw()">🎡 Draw Raffle</button>` : ''}
         </div>
         <div class="tabs">
           <button class="tab-btn ${s.tab === 'all' ? 'active' : ''}" onclick="adminState.tab='all';render()">All (${allCount})</button>
@@ -463,6 +559,136 @@
         </div>`;
       }
       app().innerHTML = html;
+      // Render draw overlay if open
+      if (drawState.open) renderDrawOverlay();
+    }
+    // ═══════════════════════════════════════
+    //  RAFFLE DRAW WHEEL
+    // ═══════════════════════════════════════
+    const WHEEL_COLORS = ['#2d6a30','#4ecdc4','#e8834a','#b5442d','#3a7d44','#36b5a0','#d4703a','#8b3622','#1e5631','#2ea89a','#c45e2a','#6e2a1a'];
+    function openDraw() {
+      drawState = { open: true, spinning: false, winner: null, angle: 0, animId: null };
+      renderAdmin();
+    }
+    function closeDraw() {
+      if (drawState.animId) cancelAnimationFrame(drawState.animId);
+      const overlay = document.getElementById('draw-overlay');
+      if (overlay) overlay.remove();
+      drawState = { open: false, spinning: false, winner: null, angle: 0, animId: null };
+      render();
+    }
+    function renderDrawOverlay() {
+      const overlay = document.createElement('div');
+      overlay.className = 'draw-overlay';
+      overlay.id = 'draw-overlay';
+      const w = drawState.winner;
+      const winnerTicket = w ? allTickets.find(t => t.ticket_number === w) : null;
+      overlay.innerHTML = `
+        <button class="draw-close" onclick="closeDraw()">&times;</button>
+        <div class="draw-title">🏉 Easter Raffle Draw</div>
+        <div class="wheel-wrap">
+          <div class="wheel-pointer"></div>
+          <canvas class="wheel-canvas" id="wheel-canvas"></canvas>
+        </div>
+        ${w && winnerTicket ? `
+          <div class="winner-reveal">
+            <div class="confetti-burst">🎉🥚🐣🎉</div>
+            <div class="winner-label">Winner</div>
+            <div class="winner-ticket">#${w}</div>
+            <div class="winner-name">${esc(winnerTicket.buyer_name)}</div>
+          </div>
+        ` : `
+          <button class="btn-spin" id="btn-spin" ${drawState.spinning ? 'disabled' : ''} onclick="spinWheel()">
+            ${drawState.spinning ? 'Spinning...' : 'Spin the Wheel!'}
+          </button>
+        `}
+        ${w ? `<button class="btn-spin" style="margin-top:12px;background:#333;font-size:14px;padding:10px 32px" onclick="openDraw()">Spin Again</button>` : ''}
+      `;
+      document.body.appendChild(overlay);
+      drawWheel();
+    }
+    function drawWheel() {
+      const canvas = document.getElementById('wheel-canvas');
+      if (!canvas) return;
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      const cx = rect.width / 2;
+      const cy = rect.height / 2;
+      const r = Math.min(cx, cy) - 4;
+      const tickets = allTickets.map(t => t.ticket_number);
+      const n = tickets.length;
+      if (n === 0) return;
+      const sliceAngle = (2 * Math.PI) / n;
+      const rotation = drawState.angle;
+      for (let i = 0; i < n; i++) {
+        const startAngle = rotation + i * sliceAngle - Math.PI / 2;
+        const endAngle = startAngle + sliceAngle;
+        const color = WHEEL_COLORS[i % WHEEL_COLORS.length];
+        ctx.beginPath();
+        ctx.moveTo(cx, cy);
+        ctx.arc(cx, cy, r, startAngle, endAngle);
+        ctx.closePath();
+        ctx.fillStyle = color;
+        ctx.fill();
+        ctx.strokeStyle = '#111318';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+        ctx.save();
+        ctx.translate(cx, cy);
+        ctx.rotate(startAngle + sliceAngle / 2);
+        ctx.fillStyle = '#fff';
+        ctx.font = `${Math.min(600, Math.max(9, Math.floor(140 / Math.sqrt(n))))}px "JetBrains Mono", monospace`;
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('#' + tickets[i], r - 10, 0);
+        ctx.restore();
+      }
+      ctx.beginPath();
+      ctx.arc(cx, cy, 22, 0, 2 * Math.PI);
+      ctx.fillStyle = '#111318';
+      ctx.fill();
+      ctx.beginPath();
+      ctx.arc(cx, cy, 18, 0, 2 * Math.PI);
+      ctx.fillStyle = '#2a2c35';
+      ctx.fill();
+    }
+    function spinWheel() {
+      if (drawState.spinning || allTickets.length === 0) return;
+      drawState.spinning = true;
+      drawState.winner = null;
+      const winnerIdx = Math.floor(Math.random() * allTickets.length);
+      const n = allTickets.length;
+      const sliceAngle = (2 * Math.PI) / n;
+      const fullSpins = 5 + Math.floor(Math.random() * 3);
+      const targetAngle = -(winnerIdx * sliceAngle) + (fullSpins * 2 * Math.PI) + (Math.random() - 0.5) * sliceAngle * 0.5;
+      const startAngle = drawState.angle;
+      const totalRotation = targetAngle - startAngle;
+      const duration = 4500 + Math.random() * 1500;
+      const startTime = performance.now();
+      const btn = document.getElementById('btn-spin');
+      if (btn) { btn.disabled = true; btn.textContent = 'Spinning...'; }
+      function animate(now) {
+        const elapsed = now - startTime;
+        const t = Math.min(elapsed / duration, 1);
+        const ease = 1 - Math.pow(1 - t, 3);
+        drawState.angle = startAngle + totalRotation * ease;
+        drawWheel();
+        if (t < 1) {
+          drawState.animId = requestAnimationFrame(animate);
+        } else {
+          drawState.spinning = false;
+          drawState.winner = allTickets[winnerIdx].ticket_number;
+          drawState.animId = null;
+          const oldOverlay = document.getElementById('draw-overlay');
+          if (oldOverlay) oldOverlay.remove();
+          renderDrawOverlay();
+        }
+      }
+      drawState.animId = requestAnimationFrame(animate);
     }
     async function toggleTicket(num, paid) {
       await updateTicketPaid(num, paid);
@@ -485,7 +711,10 @@
     // ═══════════════════════════════════════
     //  NAVIGATION
     // ═══════════════════════════════════════
-    function switchToAdmin() { currentView = 'admin'; init(); }
+    function switchToAdmin() {
+      if (adminLoggedIn) { currentView = 'admin'; init(); }
+      else { currentView = 'admin-login'; loginError = false; render(); }
+    }
     async function switchToCustomer() { currentView = 'customer'; resetCustomer(); allTickets = await getAllTickets(); render(); }
     init();
   </script>
