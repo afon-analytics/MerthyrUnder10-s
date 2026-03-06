@@ -22,9 +22,7 @@
       --border: #e5e2dc;
       --input-bg: #fafaf7;
     }
-
     * { box-sizing: border-box; margin: 0; padding: 0; }
-
     body {
       font-family: 'Outfit', sans-serif;
       background: var(--cream);
@@ -32,28 +30,21 @@
       min-height: 100vh;
       -webkit-font-smoothing: antialiased;
     }
-
     .bg-texture {
       position: fixed; inset: 0; pointer-events: none; z-index: 0;
       background: radial-gradient(circle at 20% 20%, rgba(45,106,48,0.06) 0%, transparent 50%),
                   radial-gradient(circle at 80% 80%, rgba(181,68,45,0.05) 0%, transparent 50%);
     }
-
     .container { position: relative; z-index: 1; max-width: 520px; margin: 0 auto; padding: 24px 16px 60px; }
-
-    /* --- Shared --- */
     .mono { font-family: 'JetBrains Mono', monospace; }
     .fade-up { animation: fadeUp 0.45s ease both; }
-    .fade-up-d1 { animation-delay: 0.08s; }
-    .fade-up-d2 { animation-delay: 0.15s; }
     @keyframes fadeUp { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: translateY(0); } }
     @keyframes spin { to { transform: rotate(360deg); } }
-
+    @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.05); } }
     .card {
       background: var(--white); border-radius: 16px; padding: 28px 24px;
       box-shadow: 0 2px 24px rgba(0,0,0,0.06), 0 1px 3px rgba(0,0,0,0.04);
     }
-
     .btn-primary {
       width: 100%; padding: 14px 24px; background: var(--green); color: #fff; border: none;
       border-radius: 10px; font-size: 16px; font-weight: 700; font-family: 'Outfit', sans-serif;
@@ -62,44 +53,34 @@
     .btn-primary:hover { opacity: 0.9; }
     .btn-primary:active { transform: scale(0.985); }
     .btn-primary:disabled { opacity: 0.35; cursor: default; }
-
     .btn-outline {
       width: 100%; padding: 12px 24px; background: transparent; color: var(--green);
       border: 2px solid var(--green); border-radius: 10px; font-size: 15px; font-weight: 600;
       font-family: 'Outfit', sans-serif; cursor: pointer;
     }
-
     input[type="text"], input[type="email"] {
       width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px;
       font-size: 15px; font-family: 'Outfit', sans-serif; color: var(--text);
       background: var(--input-bg); outline: none; transition: border-color 0.2s;
     }
     input:focus { border-color: var(--green); }
-
     .spinner { width: 36px; height: 36px; border: 3px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 0.8s linear infinite; margin: 0 auto; }
-
     .switch-link { background: none; border: none; color: var(--text-light); font-size: 13px; cursor: pointer; font-family: 'Outfit', sans-serif; font-weight: 500; }
     .switch-link:hover { color: var(--text-mid); }
-
-    /* --- Customer --- */
     .header { text-align: center; margin-bottom: 28px; }
     .header h1 { font-size: 32px; font-weight: 800; letter-spacing: -1px; line-height: 1.1; }
     .header h2 { font-size: 18px; font-weight: 400; color: var(--green); margin: 4px 0 12px; letter-spacing: 0.5px; }
     .price-tag { display: inline-block; background: var(--green); color: #fff; padding: 6px 18px; border-radius: 20px; font-size: 14px; font-weight: 600; }
     .desc-box { margin-top: 16px; background: var(--white); border: 2px dashed #d4cfbf; border-radius: 12px; padding: 14px 20px; }
     .desc-box .prize { color: var(--green); font-weight: 600; }
-
     .field-group { margin-bottom: 20px; }
     .field-group label { display: block; font-size: 13px; font-weight: 600; color: #444; margin-bottom: 6px; }
     .hint { font-size: 12px; color: var(--text-light); margin-top: 4px; }
-
     .qty-row { display: flex; align-items: center; background: var(--input-bg); border-radius: 10px; border: 2px solid var(--border); overflow: hidden; width: fit-content; }
     .qty-btn { width: 48px; height: 48px; border: none; background: transparent; font-size: 22px; color: var(--green); cursor: pointer; font-weight: 600; font-family: 'Outfit', sans-serif; }
     .qty-display { min-width: 48px; text-align: center; font-size: 20px; font-weight: 700; color: var(--text); }
-
     .total-bar { display: flex; justify-content: space-between; align-items: center; padding: 14px 16px; background: var(--cream); border-radius: 10px; margin-bottom: 20px; }
     .total-value { font-size: 24px; font-weight: 800; color: var(--green); }
-
     .check-circle { width: 56px; height: 56px; border-radius: 50%; background: var(--green); color: #fff; font-size: 28px; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; }
     .ticket-strip { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-bottom: 20px; }
     .ticket-chip { background: #f0ece4; border: 2px dashed #c5bfb3; border-radius: 8px; padding: 8px 16px; font-size: 16px; font-weight: 600; color: var(--green); }
@@ -107,162 +88,80 @@
     .detail-row { display: flex; justify-content: space-between; padding: 6px 0; }
     .detail-label { font-size: 13px; color: #888; }
     .detail-value { font-size: 14px; color: #333; font-weight: 500; }
-
-    .email-ok { background: #eef7ee; color: var(--green); padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 16px; text-align: center; }
-    .email-fail { background: #fef3f0; color: var(--red); padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 500; margin-bottom: 16px; text-align: center; }
-
+    .screenshot-prompt {
+      background: #fff8ed; border: 2px solid #f0c040; border-radius: 10px; padding: 14px 16px;
+      text-align: center; margin-bottom: 16px; animation: pulse 2s ease-in-out 1;
+    }
+    .screenshot-prompt .icon { font-size: 24px; margin-bottom: 4px; }
+    .screenshot-prompt .msg { font-size: 13px; font-weight: 600; color: #8a6d00; }
     .payment-box { background: var(--input-bg); border-radius: 10px; padding: 16px; margin-bottom: 16px; border: 1px solid var(--border); }
     .payment-box h4 { font-size: 14px; font-weight: 700; margin-bottom: 12px; text-transform: uppercase; letter-spacing: 0.5px; }
     .bank-row { display: flex; justify-content: space-between; padding: 5px 0; font-size: 14px; }
     .bank-label { color: #888; font-size: 13px; }
     .bank-value { font-weight: 500; color: #333; }
-
     .footer { text-align: center; margin-top: 24px; font-size: 13px; color: var(--text-light); display: flex; gap: 8px; justify-content: center; }
-
     .privacy-note { text-align: center; margin-top: 16px; font-size: 11px; color: #aaa; line-height: 1.5; padding: 0 12px; }
-
     /* --- Admin --- */
     body.admin-mode { background: var(--dark); color: #e8e6e1; }
     body.admin-mode .bg-texture { background: none; }
-
     .admin-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 8px; }
     .admin-header h1 { font-size: 24px; font-weight: 800; color: #e8e6e1; }
     .admin-header p { font-size: 13px; color: #666; margin-top: 2px; }
-
     .stats-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; }
     .stat-card { background: var(--card-dark); border-radius: 10px; padding: 12px 14px; }
     .stat-label { font-size: 10px; color: #777; text-transform: uppercase; letter-spacing: 1.2px; }
     .stat-val { font-size: 26px; font-weight: 800; margin-top: 2px; }
     .stat-sub { font-size: 11px; color: #555; margin-top: 2px; }
-
     .progress-bar-wrap { background: var(--card-dark); border-radius: 10px; padding: 14px; margin-bottom: 20px; }
     .progress-meta { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 6px; }
     .progress-track { height: 8px; background: #2a2c35; border-radius: 4px; overflow: hidden; }
     .progress-fill { height: 100%; background: linear-gradient(90deg, var(--green), var(--green-light)); border-radius: 4px; transition: width 0.4s ease; }
-
     .toolbar { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
     .toolbar input {
       flex: 1 1 180px; padding: 8px 12px; background: var(--card-dark); border: 1px solid #333;
       border-radius: 8px; color: #e8e6e1; font-size: 13px; font-family: 'Outfit', sans-serif; outline: none;
     }
     .toolbar input:focus { border-color: var(--green-light); }
-    .btn-remind-all { padding: 8px 14px; background: var(--orange); color: #fff; border: none; border-radius: 8px; font-size: 12px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; white-space: nowrap; }
-
     .tabs { display: flex; gap: 4px; margin-bottom: 16px; }
     .tab-btn { padding: 6px 14px; background: transparent; color: #666; border: 1px solid transparent; border-radius: 6px; font-size: 12px; font-weight: 500; cursor: pointer; font-family: 'Outfit', sans-serif; }
     .tab-btn.active { background: #2a2c35; color: #e8e6e1; border-color: #444; }
-
     .buyer-card { background: var(--card-dark); border-radius: 10px; padding: 16px; margin-bottom: 8px; }
     .buyer-card .name { font-size: 15px; font-weight: 600; color: #e8e6e1; }
-    .buyer-card .email { font-size: 12px; color: #666; margin-top: 2px; }
+    .buyer-card .email-text { font-size: 12px; color: #666; margin-top: 2px; }
     .buyer-card .tickets-info { font-size: 12px; color: #555; margin-top: 4px; }
     .buyer-card .paid-info { font-size: 12px; color: #888; margin-top: 2px; }
-
     .badge { font-size: 11px; padding: 3px 10px; border-radius: 12px; font-weight: 600; display: inline-block; }
     .badge-paid { color: var(--green); background: #1a2e1a; }
     .badge-unpaid { color: var(--orange); background: #2e1f14; }
-
     .action-row { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
     .btn-sm { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; border: 1px solid; }
     .btn-mark-paid { background: #1a2e1a; color: var(--green-light); border-color: var(--green); }
-    .btn-send-reminder { background: #2e1f14; color: var(--orange); border-color: #5a3520; }
     .btn-undo { background: transparent; color: #555; border-color: #333; }
-
     .ticket-toggles { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
     .ticket-toggle { padding: 3px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; border: 1px solid; transition: all 0.15s; }
     .ticket-toggle.paid { background: #1a2e1a; color: var(--green-light); border-color: var(--green); }
     .ticket-toggle.unpaid { background: #2a2c35; color: #888; border-color: #333; }
-
-    .reminder-msg { margin-top: 8px; font-size: 11px; }
-
     .empty-state { text-align: center; padding: 40px; color: #555; font-size: 14px; }
-
-    .hidden { display: none !important; }
-
-    /* --- Admin Login --- */
-    .login-card { max-width: 380px; margin: 80px auto 0; text-align: center; }
-    .login-card h2 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
-    .login-card p { font-size: 14px; color: var(--text-mid); margin-bottom: 24px; }
-    .login-card input[type="password"] {
-      width: 100%; padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px;
-      font-size: 15px; font-family: 'Outfit', sans-serif; color: var(--text);
-      background: var(--input-bg); outline: none; transition: border-color 0.2s; margin-bottom: 16px;
-    }
-    .login-card input[type="password"]:focus { border-color: var(--green); }
-    .login-error { color: var(--red); font-size: 13px; margin-bottom: 12px; font-weight: 500; }
-
-    /* --- Raffle Draw --- */
-    .draw-overlay {
-      position: fixed; inset: 0; z-index: 100; background: rgba(0,0,0,0.92);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      padding: 20px;
-    }
-    .draw-close {
-      position: absolute; top: 16px; right: 20px; background: none; border: none;
-      color: #666; font-size: 28px; cursor: pointer; font-family: 'Outfit', sans-serif;
-      line-height: 1; padding: 4px 8px;
-    }
-    .draw-close:hover { color: #aaa; }
-    .draw-title { color: #e8e6e1; font-size: 22px; font-weight: 800; margin-bottom: 16px; text-align: center; }
-    .wheel-wrap {
-      position: relative; width: 320px; height: 320px; margin: 0 auto;
-    }
-    @media (min-width: 480px) { .wheel-wrap { width: 380px; height: 380px; } }
-    .wheel-pointer {
-      position: absolute; top: -12px; left: 50%; transform: translateX(-50%); z-index: 2;
-      width: 0; height: 0;
-      border-left: 14px solid transparent; border-right: 14px solid transparent;
-      border-top: 28px solid var(--red);
-      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5));
-    }
-    .wheel-canvas { width: 100%; height: 100%; }
-    .btn-spin {
-      margin-top: 24px; padding: 14px 48px; background: var(--green); color: #fff; border: none;
-      border-radius: 10px; font-size: 18px; font-weight: 700; font-family: 'Outfit', sans-serif;
-      cursor: pointer; transition: opacity 0.2s, transform 0.1s;
-    }
-    .btn-spin:hover { opacity: 0.9; }
-    .btn-spin:active { transform: scale(0.985); }
-    .btn-spin:disabled { opacity: 0.35; cursor: default; }
-    .draw-btn {
-      padding: 10px 18px; background: linear-gradient(135deg, var(--green), var(--green-light));
-      color: #fff; border: none; border-radius: 8px; font-size: 13px; font-weight: 700;
-      cursor: pointer; font-family: 'Outfit', sans-serif; white-space: nowrap;
-    }
-    .draw-btn:hover { opacity: 0.9; }
-    .winner-reveal {
-      margin-top: 24px; text-align: center; animation: fadeUp 0.5s ease both;
-    }
-    .winner-ticket {
-      font-size: 48px; font-weight: 800; color: var(--green-light);
-      font-family: 'JetBrains Mono', monospace;
-    }
-    .winner-name { font-size: 24px; font-weight: 700; color: #e8e6e1; margin-top: 4px; }
-    .winner-label { font-size: 13px; color: #888; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 4px; }
-    .confetti-burst { font-size: 36px; margin-bottom: 8px; }
+    .delete-all-wrap { margin-top: 32px; padding-top: 20px; border-top: 1px solid #2a2c35; text-align: center; }
+    .btn-delete-all { padding: 10px 20px; background: #2e1414; color: #e85a5a; border: 1px solid #5a2020; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; }
+    .btn-delete-all:hover { background: #3e1a1a; }
   </style>
 </head>
 <body>
   <div class="bg-texture"></div>
   <div class="container" id="app"></div>
-
   <script>
     // ═══════════════════════════════════════
     //  CONFIG
     // ═══════════════════════════════════════
     const SUPABASE_URL = 'https://ckgppsxswmpzrngzpacv.supabase.co';
     const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImNrZ3Bwc3hzd21wenJuZ3pwYWN2Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyOTU3NjUsImV4cCI6MjA4Nzg3MTc2NX0.ODkevSgXobwQKwfluwJdcJnflD5dH0NThxcbeOXW8Xo';
-    const EMAIL_FN_URL = SUPABASE_URL + '/functions/v1/send-raffle-email';
     const TICKET_PRICE = 2;
-    const RAFFLE_NAME = "Merthyr RFC Under 10's Raffle";
     const BANK = { name: 'Merthyr Rugby Club', sort: '30-54-66', acc: '18558460' };
-    const ADMIN_PIN = 'merthyr2026';
-
     // ═══════════════════════════════════════
     //  SUPABASE HELPERS
     // ═══════════════════════════════════════
     const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
-
     async function sbGet(table, query = '') {
       const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { headers });
       return r.json();
@@ -275,7 +174,10 @@
       const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { method: 'PATCH', headers, body: JSON.stringify(data) });
       return r.json();
     }
-
+    async function sbDelete(table, query) {
+      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { method: 'DELETE', headers });
+      return r.ok;
+    }
     async function getNextTicket() {
       const rows = await sbGet('raffle_config', 'key=eq.next_ticket_number');
       return parseInt(rows[0]?.value || '1', 10);
@@ -295,83 +197,32 @@
     async function updateBuyerPaid(buyerName, paid) {
       return sbPatch('raffle_tickets', `buyer_name=eq.${encodeURIComponent(buyerName)}`, { paid });
     }
-
-    // ═══════════════════════════════════════
-    //  EMAIL
-    // ═══════════════════════════════════════
-    async function sendEmailViaEdge(to, subject, emailBody) {
-      try {
-        const r = await fetch(EMAIL_FN_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + SUPABASE_KEY },
-          body: JSON.stringify({ to, subject, body: emailBody }),
-        });
-        if (!r.ok) {
-          const text = await r.text();
-          console.error('Email send failed:', r.status, text);
-          return false;
-        }
-        const d = await r.json();
-        if (d.success !== true) console.error('Email send returned:', d);
-        return d.success === true;
-      } catch (err) {
-        console.error('Email send error:', err);
-        return false;
-      }
-    }
-
-    function buildConfirmationEmail(name, ticketNums, total) {
-      const list = ticketNums.map(n => '#' + n).join(', ');
-      return {
-        subject: `Your ${RAFFLE_NAME} Tickets - ${list}`,
-        body: `Dear ${name},\n\nThank you for purchasing raffle tickets for the ${RAFFLE_NAME} - Under 10's Easter Raffle! 🐣🏉\n\nThe prize is a fantastic Easter Hamper! 🎁\n\nYOUR TICKET DETAILS\n${ticketNums.length} ticket${ticketNums.length > 1 ? 's' : ''}: ${list}\nTotal: £${total.toFixed(2)}\n\nHOW TO PAY\nPlease make a bank transfer with the following details:\n\nAccount Name: ${BANK.name}\nSort Code: ${BANK.sort}\nAccount Number: ${BANK.acc}\nAmount: £${total.toFixed(2)}\nReference: RAFFLE ${name}\n\nPlease ensure you use the reference "RAFFLE ${name}" so we can match your payment to your tickets.\n\nGood luck and thank you for supporting Merthyr RFC Under 10's!\n\nBest wishes,\nMerthyr RFC Under 10's`
-      };
-    }
-
-    function buildReminderEmail(name, ticketNums, total) {
-      const list = ticketNums.map(n => '#' + n).join(', ');
-      return {
-        subject: `Reminder: Payment needed for your ${RAFFLE_NAME} tickets`,
-        body: `Hi ${name},\n\nJust a friendly reminder that we haven't yet received payment for your raffle tickets.\n\nYOUR TICKETS\n${ticketNums.length} ticket${ticketNums.length > 1 ? 's' : ''}: ${list}\nTotal due: £${total.toFixed(2)}\n\nPAYMENT DETAILS\nAccount Name: ${BANK.name}\nSort Code: ${BANK.sort}\nAccount Number: ${BANK.acc}\nAmount: £${total.toFixed(2)}\nReference: RAFFLE ${name}\n\nPlease use the reference "RAFFLE ${name}" so we can match your payment.\n\nIf you've already paid, please ignore this reminder — it may take a little while for us to update our records.\n\nThank you for supporting Merthyr RFC Under 10's! 🏉\n\nBest wishes,\nMerthyr RFC Under 10's`
-      };
-    }
-
     // ═══════════════════════════════════════
     //  STATE
     // ═══════════════════════════════════════
-    let currentView = 'customer'; // customer | admin-login | admin
+    let currentView = 'customer';
     let allTickets = [];
-    let adminLoggedIn = false;
-    let loginError = false;
-    let customerState = { step: 'form', name: '', email: '', qty: 1, assigned: [], emailSent: false };
-    let adminState = { search: '', tab: 'all', sending: null, reminderResults: {} };
-    let drawState = { open: false, spinning: false, winner: null, angle: 0, animId: null };
-
-    // ═══════════════════════════════════════
-    //  RENDER ENGINE
-    // ═══════════════════════════════════════
-    const $ = id => document.getElementById(id);
+    let customerState = { step: 'form', name: '', email: '', qty: 1, assigned: [] };
+    let adminState = { search: '', tab: 'all' };
+    function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
     const app = () => document.getElementById('app');
-
     async function init() {
       allTickets = await getAllTickets();
       render();
     }
-
     function render() {
-      document.body.className = (currentView === 'admin' || currentView === 'admin-login') ? 'admin-mode' : '';
+      document.body.className = currentView === 'admin' ? 'admin-mode' : '';
       if (currentView === 'customer') renderCustomer();
-      else if (currentView === 'admin-login') renderAdminLogin();
       else renderAdmin();
     }
-
     // ═══════════════════════════════════════
     //  CUSTOMER VIEW
     // ═══════════════════════════════════════
     function renderCustomer() {
       const s = customerState;
       const total = s.qty * TICKET_PRICE;
-      let content = `
+      const soldCount = allTickets.length;
+      let html = `
         <div style="text-align:right;margin-bottom:8px">
           <button class="switch-link" onclick="switchToAdmin()">Admin →</button>
         </div>
@@ -387,19 +238,18 @@
             <div style="font-size:13px;color:#555;margin-top:6px;font-weight:500">Draw date: <span style="color:var(--text);font-weight:700">Wednesday 1st April 2026</span></div>
           </div>
         </div>`;
-
       if (s.step === 'form') {
         const canSubmit = s.name.trim() && s.email.trim() && s.email.includes('@');
-        content += `
-        <div class="card fade-up fade-up-d1">
+        html += `
+        <div class="card fade-up" style="animation-delay:0.08s">
           <div class="field-group">
             <label>Your Name</label>
-            <input type="text" id="inp-name" value="${esc(s.name)}" placeholder="e.g. John Davies" oninput="customerState.name=this.value">
+            <input type="text" id="inp-name" value="${esc(s.name)}" placeholder="e.g. John Davies" oninput="customerState.name=this.value;updateSubmitBtn()">
           </div>
           <div class="field-group">
             <label>Email Address</label>
-            <input type="email" id="inp-email" value="${esc(s.email)}" placeholder="john@example.com" oninput="customerState.email=this.value">
-            <div class="hint">We'll send your ticket confirmation here</div>
+            <input type="email" id="inp-email" value="${esc(s.email)}" placeholder="john@example.com" oninput="customerState.email=this.value;updateSubmitBtn()">
+            <div class="hint">So we can contact you if you win</div>
           </div>
           <div class="field-group">
             <label>Number of Tickets</label>
@@ -413,21 +263,25 @@
             <span style="font-size:14px;font-weight:500;color:var(--text-mid)">Total</span>
             <span class="total-value mono">£${total.toFixed(2)}</span>
           </div>
-          <button class="btn-primary" ${canSubmit ? '' : 'disabled'} onclick="buyTickets()">Get My Tickets</button>
+          <button class="btn-primary" id="submit-btn" ${canSubmit ? '' : 'disabled'} onclick="buyTickets()">Get My Tickets</button>
         </div>`;
       } else if (s.step === 'sending') {
-        content += `
-        <div class="card fade-up fade-up-d1" style="text-align:center;padding:50px 24px">
+        html += `
+        <div class="card fade-up" style="text-align:center;padding:50px 24px">
           <div class="spinner"></div>
-          <p style="color:var(--text-mid);margin-top:16px;font-size:15px">Reserving your tickets and sending confirmation...</p>
+          <p style="color:var(--text-mid);margin-top:16px;font-size:15px">Reserving your tickets...</p>
         </div>`;
       } else if (s.step === 'confirmation') {
         const ticketTotal = s.assigned.length * TICKET_PRICE;
-        content += `
-        <div class="card fade-up fade-up-d1">
+        html += `
+        <div class="card fade-up" style="animation-delay:0.08s">
           <div style="text-align:center;margin-bottom:20px">
             <div class="check-circle">✓</div>
             <h3 style="font-size:22px;font-weight:700">Tickets Reserved!</h3>
+          </div>
+          <div class="screenshot-prompt">
+            <div class="icon">📸</div>
+            <div class="msg">Screenshot this page so you have your ticket numbers and payment details</div>
           </div>
           <div class="ticket-strip">
             ${s.assigned.map(n => `<div class="ticket-chip mono">#${n}</div>`).join('')}
@@ -435,99 +289,65 @@
           <div class="confirm-details">
             <div class="detail-row"><span class="detail-label">Name</span><span class="detail-value">${esc(s.name)}</span></div>
             <div class="detail-row"><span class="detail-label">Email</span><span class="detail-value">${esc(s.email)}</span></div>
-            <div class="detail-row"><span class="detail-label">Total</span><span class="detail-value" style="font-weight:700;color:var(--green)">£${ticketTotal.toFixed(2)}</span></div>
+            <div class="detail-row"><span class="detail-label">Tickets</span><span class="detail-value">${s.assigned.length} × £${TICKET_PRICE}</span></div>
+            <div class="detail-row" style="border-top:1px solid var(--border);margin-top:4px;padding-top:8px">
+              <span class="detail-label" style="font-weight:600;color:#444">Total to pay</span>
+              <span class="detail-value" style="font-weight:700;color:var(--green);font-size:16px">£${ticketTotal.toFixed(2)}</span>
+            </div>
           </div>
-          ${s.emailSent
-            ? `<div class="email-ok">📧 Confirmation email sent to ${esc(s.email)}</div>`
-            : `<div class="email-fail">⚠️ Couldn't send confirmation email. Please note your ticket numbers above.</div>`}
           <div class="payment-box">
-            <h4>Payment Details</h4>
+            <h4>💳 Payment — Bank Transfer</h4>
             <div class="bank-row"><span class="bank-label">Account</span><span class="bank-value mono">${BANK.name}</span></div>
             <div class="bank-row"><span class="bank-label">Sort Code</span><span class="bank-value mono">${BANK.sort}</span></div>
             <div class="bank-row"><span class="bank-label">Acc No.</span><span class="bank-value mono">${BANK.acc}</span></div>
-            <div class="bank-row"><span class="bank-label">Reference</span><span class="bank-value mono" style="color:var(--red);font-weight:700">RAFFLE ${esc(s.name)}</span></div>
+            <div class="bank-row" style="margin-top:6px;padding-top:6px;border-top:1px solid var(--border)">
+              <span class="bank-label">Amount</span><span class="bank-value mono" style="color:var(--green);font-weight:700">£${ticketTotal.toFixed(2)}</span>
+            </div>
+            <div class="bank-row">
+              <span class="bank-label">Reference</span><span class="bank-value mono" style="color:var(--red);font-weight:700">RAFFLE ${esc(s.name)}</span>
+            </div>
+          </div>
+          <div style="background:#f0f7f0;border-radius:8px;padding:12px;margin-bottom:16px;font-size:12px;color:var(--green);text-align:center;line-height:1.5">
+            ⚠️ Please use the exact reference <strong>RAFFLE ${esc(s.name)}</strong> so we can match your payment to your tickets
           </div>
           <button class="btn-outline" onclick="resetCustomer()">Buy More Tickets</button>
         </div>`;
       }
-
-      content += `
-        <div class="footer"><span>Good luck! 🍀</span></div>
+      html += `
+        <div class="footer"><span>${soldCount} ticket${soldCount !== 1 ? 's' : ''} sold</span><span style="color:#ccc">·</span><span>Good luck! 🍀</span></div>
         <div class="privacy-note">🔒 Your personal information (name and email) is only used to manage this raffle. Once the raffle has been drawn, all personal information will be deleted from our records.</div>`;
-      app().innerHTML = content;
+      app().innerHTML = html;
     }
-
-    function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
-
+    function updateSubmitBtn() {
+      const btn = document.getElementById('submit-btn');
+      if (btn) {
+        const s = customerState;
+        btn.disabled = !(s.name.trim() && s.email.trim() && s.email.includes('@'));
+      }
+    }
     function changeQty(delta) {
       customerState.qty = Math.max(1, customerState.qty + delta);
       render();
     }
-
     function resetCustomer() {
-      customerState = { step: 'form', name: '', email: '', qty: 1, assigned: [], emailSent: false };
+      customerState = { step: 'form', name: '', email: '', qty: 1, assigned: [] };
       render();
     }
-
     async function buyTickets() {
       const s = customerState;
       if (!s.name.trim() || !s.email.trim() || !s.email.includes('@')) return;
       s.step = 'sending';
       render();
-
       const nextNum = await getNextTicket();
       const tickets = Array.from({ length: s.qty }, (_, i) => nextNum + i);
       s.assigned = tickets;
-
-      // Insert into DB
       const rows = tickets.map(n => ({ ticket_number: n, buyer_name: s.name.trim(), buyer_email: s.email.trim(), paid: false }));
       await insertTickets(rows);
       await setNextTicket(nextNum + s.qty);
-
-      // Refresh
       allTickets = await getAllTickets();
-
-      // Send email
-      const total = tickets.length * TICKET_PRICE;
-      const { subject, body } = buildConfirmationEmail(s.name.trim(), tickets, total);
-      s.emailSent = await sendEmailViaEdge(s.email.trim(), subject, body);
-
       s.step = 'confirmation';
       render();
     }
-
-    // ═══════════════════════════════════════
-    //  ADMIN LOGIN
-    // ═══════════════════════════════════════
-    function renderAdminLogin() {
-      app().innerHTML = `
-        <div class="login-card card fade-up">
-          <div style="font-size:40px;margin-bottom:12px">🔒</div>
-          <h2>Admin Access</h2>
-          <p>Enter the admin password to continue</p>
-          ${loginError ? '<div class="login-error">Incorrect password. Please try again.</div>' : ''}
-          <input type="password" id="admin-pin" placeholder="Enter password" onkeydown="if(event.key==='Enter')attemptLogin()">
-          <button class="btn-primary" onclick="attemptLogin()">Log In</button>
-          <div style="margin-top:16px">
-            <button class="switch-link" style="color:var(--green-light)" onclick="switchToCustomer()">← Back to shop</button>
-          </div>
-        </div>`;
-      document.getElementById('admin-pin').focus();
-    }
-
-    function attemptLogin() {
-      const pin = document.getElementById('admin-pin').value;
-      if (pin === ADMIN_PIN) {
-        adminLoggedIn = true;
-        loginError = false;
-        currentView = 'admin';
-        init();
-      } else {
-        loginError = true;
-        render();
-      }
-    }
-
     // ═══════════════════════════════════════
     //  ADMIN VIEW
     // ═══════════════════════════════════════
@@ -540,35 +360,29 @@
       const collected = totalPaid * TICKET_PRICE;
       const outstanding = totalUnpaid * TICKET_PRICE;
       const pctPaid = totalSold > 0 ? Math.round((totalPaid / totalSold) * 100) : 0;
-
-      // Group by buyer
       const buyers = {};
       allTickets.forEach(t => {
         if (!buyers[t.buyer_name]) buyers[t.buyer_name] = { email: t.buyer_email, tickets: [], allPaid: true };
         buyers[t.buyer_name].tickets.push(t);
         if (!t.paid) buyers[t.buyer_name].allPaid = false;
       });
-
       const filteredBuyers = Object.entries(buyers).filter(([name, b]) => {
         const match = name.toLowerCase().includes(s.search.toLowerCase()) || b.email.toLowerCase().includes(s.search.toLowerCase());
         if (s.tab === 'paid') return match && b.allPaid;
         if (s.tab === 'unpaid') return match && !b.allPaid;
         return match;
       });
-
       const allCount = Object.keys(buyers).length;
-      const unpaidCount = Object.entries(buyers).filter(([, b]) => !b.allPaid).length;
-      const paidCount = Object.entries(buyers).filter(([, b]) => b.allPaid).length;
-
+      const unpaidBuyerCount = Object.entries(buyers).filter(([, b]) => !b.allPaid).length;
+      const paidBuyerCount = Object.entries(buyers).filter(([, b]) => b.allPaid).length;
       let html = `
         <div class="admin-header">
           <div>
             <h1>🏉 Raffle Admin</h1>
-            <p>Merthyr RFC Under 10's</p>
+            <p>Merthyr RFC Under 10's · Draw: Wed 1st April</p>
           </div>
           <button class="switch-link" style="color:var(--green-light)" onclick="switchToCustomer()">← Back to shop</button>
         </div>
-
         <div class="stats-grid">
           <div class="stat-card" style="border-left:3px solid var(--green-light)">
             <div class="stat-label mono">Sold</div>
@@ -586,7 +400,6 @@
             <div class="stat-sub">£${outstanding.toFixed(2)} outstanding</div>
           </div>
         </div>`;
-
       if (totalSold > 0) {
         html += `
         <div class="progress-bar-wrap">
@@ -594,19 +407,15 @@
           <div class="progress-track"><div class="progress-fill" style="width:${pctPaid}%"></div></div>
         </div>`;
       }
-
       html += `
         <div class="toolbar">
           <input type="text" placeholder="Search name or email..." value="${esc(s.search)}" oninput="adminState.search=this.value;render()">
-          ${totalUnpaid > 0 ? `<button class="btn-remind-all" onclick="remindAll()">📧 Remind All Unpaid</button>` : ''}
-          ${totalSold > 0 ? `<button class="draw-btn" onclick="openDraw()">🎡 Draw Raffle</button>` : ''}
         </div>
         <div class="tabs">
           <button class="tab-btn ${s.tab === 'all' ? 'active' : ''}" onclick="adminState.tab='all';render()">All (${allCount})</button>
-          <button class="tab-btn ${s.tab === 'unpaid' ? 'active' : ''}" onclick="adminState.tab='unpaid';render()">Unpaid (${unpaidCount})</button>
-          <button class="tab-btn ${s.tab === 'paid' ? 'active' : ''}" onclick="adminState.tab='paid';render()">Paid (${paidCount})</button>
+          <button class="tab-btn ${s.tab === 'unpaid' ? 'active' : ''}" onclick="adminState.tab='unpaid';render()">Unpaid (${unpaidBuyerCount})</button>
+          <button class="tab-btn ${s.tab === 'paid' ? 'active' : ''}" onclick="adminState.tab='paid';render()">Paid (${paidBuyerCount})</button>
         </div>`;
-
       if (filteredBuyers.length === 0) {
         html += `<div class="empty-state">${totalSold === 0 ? 'No tickets sold yet' : 'No matching buyers'}</div>`;
       } else {
@@ -615,15 +424,12 @@
           const paid = buyer.tickets.filter(t => t.paid);
           const bTotal = buyer.tickets.length * TICKET_PRICE;
           const bPaid = paid.length * TICKET_PRICE;
-          const isSending = s.sending === name;
-          const reminderResult = s.reminderResults[name];
-
           html += `
           <div class="buyer-card" style="border-left:3px solid ${buyer.allPaid ? 'var(--green)' : 'var(--orange)'}">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
               <div>
                 <div class="name">${esc(name)}</div>
-                <div class="email">${esc(buyer.email)}</div>
+                <div class="email-text">${esc(buyer.email)}</div>
                 <div class="tickets-info mono">Tickets: ${buyer.tickets.map(t => '#' + t.ticket_number).join(', ')}</div>
                 <div class="paid-info">£${bPaid.toFixed(2)} / £${bTotal.toFixed(2)} paid</div>
               </div>
@@ -634,14 +440,10 @@
               </div>
             </div>
             <div class="action-row">
-              ${!buyer.allPaid ? `
-                <button class="btn-sm btn-mark-paid" onclick="markBuyerPaid('${esc(name)}',true)">Mark All Paid</button>
-                <button class="btn-sm btn-send-reminder" onclick="sendReminder('${esc(name)}')" ${isSending ? 'disabled' : ''}>${isSending ? 'Sending...' : 'Send Reminder'}</button>
-              ` : `
-                <button class="btn-sm btn-undo" onclick="markBuyerPaid('${esc(name)}',false)">Undo Paid</button>
-              `}
+              ${!buyer.allPaid
+                ? `<button class="btn-sm btn-mark-paid" onclick="markBuyerPaid('${esc(name)}',true)">Mark All Paid</button>`
+                : `<button class="btn-sm btn-undo" onclick="markBuyerPaid('${esc(name)}',false)">Undo Paid</button>`}
             </div>
-            ${reminderResult !== undefined ? `<div class="reminder-msg" style="color:${reminderResult ? 'var(--green-light)' : 'var(--orange)'}">${reminderResult ? '✓ Reminder sent' : '⚠ Failed to send'}</div>` : ''}
             ${buyer.tickets.length > 1 ? `
             <div class="ticket-toggles">
               ${buyer.tickets.map(t => `
@@ -653,238 +455,38 @@
           </div>`;
         });
       }
-
+      if (totalSold > 0) {
+        html += `
+        <div class="delete-all-wrap">
+          <p style="font-size:12px;color:#555;margin-bottom:10px">After the draw, delete all personal data as promised</p>
+          <button class="btn-delete-all" onclick="confirmDeleteAll()">🗑️ Delete All Raffle Data</button>
+        </div>`;
+      }
       app().innerHTML = html;
-
-      // Render draw overlay if open
-      if (drawState.open) renderDrawOverlay();
     }
-
-    // ═══════════════════════════════════════
-    //  RAFFLE DRAW WHEEL
-    // ═══════════════════════════════════════
-    const WHEEL_COLORS = ['#2d6a30','#4ecdc4','#e8834a','#b5442d','#3a7d44','#36b5a0','#d4703a','#8b3622','#1e5631','#2ea89a','#c45e2a','#6e2a1a'];
-
-    function openDraw() {
-      drawState = { open: true, spinning: false, winner: null, angle: 0, animId: null };
-      renderAdmin();
-    }
-
-    function closeDraw() {
-      if (drawState.animId) cancelAnimationFrame(drawState.animId);
-      const overlay = document.getElementById('draw-overlay');
-      if (overlay) overlay.remove();
-      drawState = { open: false, spinning: false, winner: null, angle: 0, animId: null };
-      render();
-    }
-
-    function renderDrawOverlay() {
-      // Create overlay element
-      const overlay = document.createElement('div');
-      overlay.className = 'draw-overlay';
-      overlay.id = 'draw-overlay';
-
-      const w = drawState.winner;
-      const winnerTicket = w ? allTickets.find(t => t.ticket_number === w) : null;
-
-      overlay.innerHTML = `
-        <button class="draw-close" onclick="closeDraw()">&times;</button>
-        <div class="draw-title">🏉 Easter Raffle Draw</div>
-        <div class="wheel-wrap">
-          <div class="wheel-pointer"></div>
-          <canvas class="wheel-canvas" id="wheel-canvas"></canvas>
-        </div>
-        ${w && winnerTicket ? `
-          <div class="winner-reveal">
-            <div class="confetti-burst">🎉🥚🐣🎉</div>
-            <div class="winner-label">Winner</div>
-            <div class="winner-ticket">#${w}</div>
-            <div class="winner-name">${esc(winnerTicket.buyer_name)}</div>
-          </div>
-        ` : `
-          <button class="btn-spin" id="btn-spin" ${drawState.spinning ? 'disabled' : ''} onclick="spinWheel()">
-            ${drawState.spinning ? 'Spinning...' : 'Spin the Wheel!'}
-          </button>
-        `}
-        ${w ? `<button class="btn-spin" style="margin-top:12px;background:#333;font-size:14px;padding:10px 32px" onclick="openDraw()">Spin Again</button>` : ''}
-      `;
-      document.body.appendChild(overlay);
-      drawWheel();
-    }
-
-    function drawWheel() {
-      const canvas = document.getElementById('wheel-canvas');
-      if (!canvas) return;
-      const dpr = window.devicePixelRatio || 1;
-      const rect = canvas.getBoundingClientRect();
-      canvas.width = rect.width * dpr;
-      canvas.height = rect.height * dpr;
-      const ctx = canvas.getContext('2d');
-      ctx.scale(dpr, dpr);
-
-      const cx = rect.width / 2;
-      const cy = rect.height / 2;
-      const r = Math.min(cx, cy) - 4;
-      const tickets = allTickets.map(t => t.ticket_number);
-      const n = tickets.length;
-      if (n === 0) return;
-
-      const sliceAngle = (2 * Math.PI) / n;
-      const rotation = drawState.angle;
-
-      for (let i = 0; i < n; i++) {
-        const startAngle = rotation + i * sliceAngle - Math.PI / 2;
-        const endAngle = startAngle + sliceAngle;
-        const color = WHEEL_COLORS[i % WHEEL_COLORS.length];
-
-        // Draw slice
-        ctx.beginPath();
-        ctx.moveTo(cx, cy);
-        ctx.arc(cx, cy, r, startAngle, endAngle);
-        ctx.closePath();
-        ctx.fillStyle = color;
-        ctx.fill();
-        ctx.strokeStyle = '#111318';
-        ctx.lineWidth = 1.5;
-        ctx.stroke();
-
-        // Draw label
-        ctx.save();
-        ctx.translate(cx, cy);
-        ctx.rotate(startAngle + sliceAngle / 2);
-        ctx.fillStyle = '#fff';
-        ctx.font = `${Math.min(600, Math.max(9, Math.floor(140 / Math.sqrt(n)))) }px "JetBrains Mono", monospace`;
-        ctx.textAlign = 'right';
-        ctx.textBaseline = 'middle';
-        ctx.fillText('#' + tickets[i], r - 10, 0);
-        ctx.restore();
-      }
-
-      // Center circle
-      ctx.beginPath();
-      ctx.arc(cx, cy, 22, 0, 2 * Math.PI);
-      ctx.fillStyle = '#111318';
-      ctx.fill();
-      ctx.beginPath();
-      ctx.arc(cx, cy, 18, 0, 2 * Math.PI);
-      ctx.fillStyle = '#2a2c35';
-      ctx.fill();
-    }
-
-    function spinWheel() {
-      if (drawState.spinning || allTickets.length === 0) return;
-      drawState.spinning = true;
-      drawState.winner = null;
-
-      // Pick random winner
-      const winnerIdx = Math.floor(Math.random() * allTickets.length);
-      const n = allTickets.length;
-      const sliceAngle = (2 * Math.PI) / n;
-
-      // Calculate target angle: align winning slice under the pointer (top, -PI/2)
-      // The pointer is at the top (angle = -PI/2 = 3PI/2 from 0). We want the center of winnerIdx's slice
-      // to end up at the top. Slice i center is at: rotation + i*sliceAngle. We want rotation + winnerIdx*sliceAngle = 0 (top, since we offset by -PI/2 in drawing).
-      // So target rotation = -winnerIdx * sliceAngle
-      // Plus some full spins for drama
-      const fullSpins = 5 + Math.floor(Math.random() * 3); // 5-7 full turns
-      const targetAngle = -(winnerIdx * sliceAngle) + (fullSpins * 2 * Math.PI) + (Math.random() - 0.5) * sliceAngle * 0.5;
-
-      const startAngle = drawState.angle;
-      const totalRotation = targetAngle - startAngle;
-      const duration = 4500 + Math.random() * 1500; // 4.5-6 seconds
-      const startTime = performance.now();
-
-      // Update spin button
-      const btn = document.getElementById('btn-spin');
-      if (btn) { btn.disabled = true; btn.textContent = 'Spinning...'; }
-
-      function animate(now) {
-        const elapsed = now - startTime;
-        const t = Math.min(elapsed / duration, 1);
-        // Ease out cubic for satisfying deceleration
-        const ease = 1 - Math.pow(1 - t, 3);
-
-        drawState.angle = startAngle + totalRotation * ease;
-        drawWheel();
-
-        if (t < 1) {
-          drawState.animId = requestAnimationFrame(animate);
-        } else {
-          // Done
-          drawState.spinning = false;
-          drawState.winner = allTickets[winnerIdx].ticket_number;
-          drawState.animId = null;
-          // Re-render to show winner
-          const oldOverlay = document.getElementById('draw-overlay');
-          if (oldOverlay) oldOverlay.remove();
-          renderDrawOverlay();
-        }
-      }
-      drawState.animId = requestAnimationFrame(animate);
-    }
-
-    // ═══════════════════════════════════════
-    //  ADMIN ACTIONS
-    // ═══════════════════════════════════════
     async function toggleTicket(num, paid) {
       await updateTicketPaid(num, paid);
       allTickets = await getAllTickets();
       render();
     }
-
     async function markBuyerPaid(name, paid) {
       await updateBuyerPaid(name, paid);
       allTickets = await getAllTickets();
       render();
     }
-
-    async function sendReminder(name) {
-      adminState.sending = name;
+    async function confirmDeleteAll() {
+      if (!confirm('Are you sure you want to delete ALL raffle data? This cannot be undone.')) return;
+      if (!confirm('Really sure? This will permanently delete all ticket records and personal information.')) return;
+      await sbDelete('raffle_tickets', 'id=gt.0');
+      await sbPatch('raffle_config', 'key=eq.next_ticket_number', { value: '1' });
+      allTickets = [];
       render();
-
-      const buyers = {};
-      allTickets.forEach(t => {
-        if (!buyers[t.buyer_name]) buyers[t.buyer_name] = { email: t.buyer_email, tickets: [] };
-        buyers[t.buyer_name].tickets.push(t);
-      });
-
-      const buyer = buyers[name];
-      if (!buyer) { adminState.sending = null; render(); return; }
-
-      const unpaidNums = buyer.tickets.filter(t => !t.paid).map(t => t.ticket_number);
-      const total = unpaidNums.length * TICKET_PRICE;
-      const { subject, body } = buildReminderEmail(name, unpaidNums, total);
-      const ok = await sendEmailViaEdge(buyer.email, subject, body);
-
-      adminState.sending = null;
-      adminState.reminderResults[name] = ok;
-      render();
-      setTimeout(() => { delete adminState.reminderResults[name]; render(); }, 4000);
     }
-
-    async function remindAll() {
-      const buyers = {};
-      allTickets.forEach(t => {
-        if (!buyers[t.buyer_name]) buyers[t.buyer_name] = { email: t.buyer_email, tickets: [], allPaid: true };
-        buyers[t.buyer_name].tickets.push(t);
-        if (!t.paid) buyers[t.buyer_name].allPaid = false;
-      });
-      const unpaidNames = Object.entries(buyers).filter(([, b]) => !b.allPaid).map(([n]) => n);
-      for (const name of unpaidNames) {
-        await sendReminder(name);
-      }
-    }
-
     // ═══════════════════════════════════════
     //  NAVIGATION
     // ═══════════════════════════════════════
-    function switchToAdmin() {
-      if (adminLoggedIn) { currentView = 'admin'; init(); }
-      else { currentView = 'admin-login'; loginError = false; render(); }
-    }
+    function switchToAdmin() { currentView = 'admin'; init(); }
     async function switchToCustomer() { currentView = 'customer'; resetCustomer(); allTickets = await getAllTickets(); render(); }
-
-    // Start
     init();
   </script>
 </body>
