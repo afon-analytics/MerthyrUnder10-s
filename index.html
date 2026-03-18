@@ -150,6 +150,15 @@
       border-radius: 6px; color: #e8e6e1; font-size: 13px; font-family: 'Outfit', sans-serif; outline: none;
     }
     .edit-form input:focus { border-color: var(--green-light); }
+    .ticket-edit-form { margin-top: 8px; padding: 10px; background: #1e2028; border-radius: 6px; border: 1px solid #444; }
+    .ticket-edit-form .ticket-edit-header { font-size: 12px; font-weight: 700; color: var(--green-light); margin-bottom: 8px; }
+    .ticket-edit-form .field-row { margin-bottom: 8px; }
+    .ticket-edit-form label { display: block; font-size: 10px; color: #777; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .ticket-edit-form input {
+      width: 100%; padding: 6px 8px; background: var(--card-dark); border: 1px solid #444;
+      border-radius: 5px; color: #e8e6e1; font-size: 12px; font-family: 'Outfit', sans-serif; outline: none;
+    }
+    .ticket-edit-form input:focus { border-color: var(--green-light); }
     .ticket-toggles { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
     .ticket-toggle { padding: 3px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; border: 1px solid; transition: all 0.15s; }
     .ticket-toggle.paid { background: #1a2e1a; color: var(--green-light); border-color: var(--green); }
@@ -297,7 +306,7 @@
     let adminLoggedIn = false;
     let loginError = false;
     let customerState = { step: 'form', name: '', contact: '', qty: 1, assigned: [] };
-    let adminState = { search: '', tab: 'all', editing: null };
+    let adminState = { search: '', tab: 'all', editing: null, editingTicket: null };
     let drawState = { open: false, spinning: false, winner: null, angle: 0, animId: null, paidOnly: false };
     function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
     function escAttr(str) { return str.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
@@ -609,8 +618,30 @@
                 <button class="ticket-toggle mono ${t.paid ? 'paid' : 'unpaid'}" onclick="toggleTicket(${t.ticket_number},${!t.paid})">
                   #${t.ticket_number} ${t.paid ? '✓' : ''}
                 </button>
+                <button class="btn-sm btn-edit" style="padding:2px 6px;font-size:10px" onclick="startEditTicket(${t.ticket_number},'${escAttr(t.buyer_name)}','${escAttr(t.buyer_email)}')">✎</button>
               `).join('')}
-            </div>` : ''}
+            </div>` : `
+            <div class="ticket-toggles">
+              <button class="btn-sm btn-edit" style="padding:2px 8px;font-size:10px" onclick="startEditTicket(${buyer.tickets[0].ticket_number},'${escAttr(buyer.tickets[0].buyer_name)}','${escAttr(buyer.tickets[0].buyer_email)}')">✎ Reassign #${buyer.tickets[0].ticket_number}</button>
+            </div>
+            `}
+            ${s.editingTicket && buyer.tickets.some(t => t.ticket_number === s.editingTicket.ticketNumber) ? `
+            <div class="ticket-edit-form">
+              <div class="ticket-edit-header">Reassign Ticket #${s.editingTicket.ticketNumber}</div>
+              <div class="field-row">
+                <label>New Name</label>
+                <input type="text" id="ticket-edit-name" value="${esc(s.editingTicket.name)}" oninput="adminState.editingTicket.name=this.value">
+              </div>
+              <div class="field-row">
+                <label>New Contact</label>
+                <input type="text" id="ticket-edit-contact" value="${esc(s.editingTicket.contact)}" oninput="adminState.editingTicket.contact=this.value">
+              </div>
+              <div class="action-row">
+                <button class="btn-sm btn-save-edit" onclick="saveEditTicket()">Save</button>
+                <button class="btn-sm btn-cancel-edit" onclick="cancelEditTicket()">Cancel</button>
+              </div>
+            </div>
+            ` : ''}
           </div>`;
         });
       }
@@ -791,6 +822,23 @@
       // Update all tickets belonging to the original buyer
       await sbPatch('raffle_tickets', `buyer_name=eq.${encodeURIComponent(e.originalName)}`, { buyer_name: newName, buyer_email: newContact });
       adminState.editing = null;
+      allTickets = await getAllTickets();
+      if (!Array.isArray(allTickets)) allTickets = [];
+      render();
+    }
+    function startEditTicket(ticketNumber, name, contact) {
+      adminState.editingTicket = { ticketNumber, name, contact };
+      render();
+    }
+    function cancelEditTicket() {
+      adminState.editingTicket = null;
+      render();
+    }
+    async function saveEditTicket() {
+      const e = adminState.editingTicket;
+      if (!e || !e.name.trim()) return;
+      await sbPatch('raffle_tickets', `ticket_number=eq.${e.ticketNumber}`, { buyer_name: e.name.trim(), buyer_email: e.contact.trim() });
+      adminState.editingTicket = null;
       allTickets = await getAllTickets();
       if (!Array.isArray(allTickets)) allTickets = [];
       render();
