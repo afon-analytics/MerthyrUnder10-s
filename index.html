@@ -229,24 +229,36 @@
     // ═══════════════════════════════════════
     const headers = { 'apikey': SUPABASE_KEY, 'Authorization': 'Bearer ' + SUPABASE_KEY, 'Content-Type': 'application/json', 'Prefer': 'return=representation' };
     async function sbGet(table, query = '') {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { headers });
-      return r.json();
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { headers });
+        if (!r.ok) { console.error('sbGet failed:', r.status, await r.text()); return []; }
+        return await r.json();
+      } catch (e) { console.error('sbGet error:', e); return []; }
     }
     async function sbPost(table, data) {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, { method: 'POST', headers, body: JSON.stringify(data) });
-      return r.json();
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}`, { method: 'POST', headers, body: JSON.stringify(data) });
+        if (!r.ok) { const err = await r.text(); console.error('sbPost failed:', r.status, err); return []; }
+        return await r.json();
+      } catch (e) { console.error('sbPost error:', e); return []; }
     }
     async function sbPatch(table, query, data) {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { method: 'PATCH', headers, body: JSON.stringify(data) });
-      return r.json();
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { method: 'PATCH', headers, body: JSON.stringify(data) });
+        if (!r.ok) { const err = await r.text(); console.error('sbPatch failed:', r.status, err); return []; }
+        return await r.json();
+      } catch (e) { console.error('sbPatch error:', e); return []; }
     }
     async function sbDelete(table, query) {
-      const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { method: 'DELETE', headers });
-      if (!r.ok) { const err = await r.text(); console.error('Delete failed:', r.status, err); alert('Delete failed — check Supabase RLS policies allow DELETE for anon role.'); }
-      return r.ok;
+      try {
+        const r = await fetch(`${SUPABASE_URL}/rest/v1/${table}?${query}`, { method: 'DELETE', headers });
+        if (!r.ok) { const err = await r.text(); console.error('Delete failed:', r.status, err); alert('Delete failed — check Supabase RLS policies allow DELETE for anon role.'); }
+        return r.ok;
+      } catch (e) { console.error('sbDelete error:', e); alert('Delete failed — network error.'); return false; }
     }
     async function getNextTicket() {
       const rows = await sbGet('raffle_config', 'key=eq.next_ticket_number');
+      if (!Array.isArray(rows) || rows.length === 0) return 1;
       return parseInt(rows[0]?.value || '1', 10);
     }
     async function setNextTicket(n) {
@@ -277,7 +289,13 @@
     function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
     const app = () => document.getElementById('app');
     async function init() {
-      allTickets = await getAllTickets();
+      try {
+        allTickets = await getAllTickets();
+        if (!Array.isArray(allTickets)) allTickets = [];
+      } catch (e) {
+        console.error('init error:', e);
+        allTickets = [];
+      }
       render();
     }
     function render() {
@@ -408,14 +426,21 @@
       if (!s.name.trim() || !s.contact.trim()) return;
       s.step = 'sending';
       render();
-      const nextNum = await getNextTicket();
-      const tickets = Array.from({ length: s.qty }, (_, i) => nextNum + i);
-      s.assigned = tickets;
-      const rows = tickets.map(n => ({ ticket_number: n, buyer_name: s.name.trim(), buyer_email: s.contact.trim(), paid: false }));
-      await insertTickets(rows);
-      await setNextTicket(nextNum + s.qty);
-      allTickets = await getAllTickets();
-      s.step = 'confirmation';
+      try {
+        const nextNum = await getNextTicket();
+        const tickets = Array.from({ length: s.qty }, (_, i) => nextNum + i);
+        s.assigned = tickets;
+        const rows = tickets.map(n => ({ ticket_number: n, buyer_name: s.name.trim(), buyer_email: s.contact.trim(), paid: false }));
+        await insertTickets(rows);
+        await setNextTicket(nextNum + s.qty);
+        allTickets = await getAllTickets();
+        if (!Array.isArray(allTickets)) allTickets = [];
+        s.step = 'confirmation';
+      } catch (e) {
+        console.error('buyTickets error:', e);
+        alert('Something went wrong reserving your tickets. Please try again.');
+        s.step = 'form';
+      }
       render();
     }
     // ═══════════════════════════════════════
