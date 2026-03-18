@@ -136,7 +136,20 @@
     .action-row { display: flex; gap: 6px; margin-top: 10px; flex-wrap: wrap; }
     .btn-sm { padding: 5px 12px; border-radius: 6px; font-size: 11px; font-weight: 600; cursor: pointer; font-family: 'Outfit', sans-serif; border: 1px solid; }
     .btn-mark-paid { background: #1a2e1a; color: var(--green-light); border-color: var(--green); }
+    .btn-edit { background: #1a1e2e; color: #7eb8f0; border-color: #3a5a8a; }
+    .btn-edit:hover { background: #222840; }
+    .btn-cancel-edit { background: transparent; color: #888; border-color: #444; }
+    .btn-save-edit { background: #1a2e1a; color: var(--green-light); border-color: var(--green); }
     .btn-undo { background: transparent; color: #555; border-color: #333; }
+    .edit-form { margin-top: 10px; padding: 12px; background: #22242d; border-radius: 8px; border: 1px solid #333; }
+    .edit-form .field-row { margin-bottom: 10px; }
+    .edit-form .field-row:last-child { margin-bottom: 0; }
+    .edit-form label { display: block; font-size: 11px; color: #888; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+    .edit-form input {
+      width: 100%; padding: 8px 10px; background: var(--card-dark); border: 1px solid #444;
+      border-radius: 6px; color: #e8e6e1; font-size: 13px; font-family: 'Outfit', sans-serif; outline: none;
+    }
+    .edit-form input:focus { border-color: var(--green-light); }
     .ticket-toggles { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 4px; }
     .ticket-toggle { padding: 3px 10px; border-radius: 4px; font-size: 11px; cursor: pointer; border: 1px solid; transition: all 0.15s; }
     .ticket-toggle.paid { background: #1a2e1a; color: var(--green-light); border-color: var(--green); }
@@ -284,9 +297,10 @@
     let adminLoggedIn = false;
     let loginError = false;
     let customerState = { step: 'form', name: '', contact: '', qty: 1, assigned: [] };
-    let adminState = { search: '', tab: 'all' };
+    let adminState = { search: '', tab: 'all', editing: null };
     let drawState = { open: false, spinning: false, winner: null, angle: 0, animId: null, paidOnly: false };
     function esc(str) { const d = document.createElement('div'); d.textContent = str; return d.innerHTML; }
+    function escAttr(str) { return str.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;'); }
     const app = () => document.getElementById('app');
     async function init() {
       try {
@@ -550,6 +564,7 @@
           const paid = buyer.tickets.filter(t => t.paid);
           const bTotal = buyer.tickets.length * TICKET_PRICE;
           const bPaid = paid.length * TICKET_PRICE;
+          const isEditing = s.editing && s.editing.originalName === name;
           html += `
           <div class="buyer-card" style="border-left:3px solid ${buyer.allPaid ? 'var(--green)' : 'var(--orange)'}">
             <div style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:8px">
@@ -565,11 +580,29 @@
                   : `<span class="badge badge-unpaid">${unpaid.length} unpaid</span>`}
               </div>
             </div>
-            <div class="action-row">
-              ${!buyer.allPaid
-                ? `<button class="btn-sm btn-mark-paid" onclick="markBuyerPaid('${esc(name)}',true)">Mark All Paid</button>`
-                : `<button class="btn-sm btn-undo" onclick="markBuyerPaid('${esc(name)}',false)">Undo Paid</button>`}
+            ${isEditing ? `
+            <div class="edit-form">
+              <div class="field-row">
+                <label>Name</label>
+                <input type="text" id="edit-name" value="${esc(s.editing.name)}" oninput="adminState.editing.name=this.value">
+              </div>
+              <div class="field-row">
+                <label>Contact</label>
+                <input type="text" id="edit-contact" value="${esc(s.editing.contact)}" oninput="adminState.editing.contact=this.value">
+              </div>
+              <div class="action-row">
+                <button class="btn-sm btn-save-edit" onclick="saveEditBuyer()">Save</button>
+                <button class="btn-sm btn-cancel-edit" onclick="cancelEditBuyer()">Cancel</button>
+              </div>
             </div>
+            ` : `
+            <div class="action-row">
+              <button class="btn-sm btn-edit" onclick="startEditBuyer('${escAttr(name)}','${escAttr(buyer.email)}')">Edit</button>
+              ${!buyer.allPaid
+                ? `<button class="btn-sm btn-mark-paid" onclick="markBuyerPaid('${escAttr(name)}',true)">Mark All Paid</button>`
+                : `<button class="btn-sm btn-undo" onclick="markBuyerPaid('${escAttr(name)}',false)">Undo Paid</button>`}
+            </div>
+            `}
             ${buyer.tickets.length > 1 ? `
             <div class="ticket-toggles">
               ${buyer.tickets.map(t => `
@@ -741,6 +774,26 @@
         }
       }
       drawState.animId = requestAnimationFrame(animate);
+    }
+    function startEditBuyer(name, contact) {
+      adminState.editing = { originalName: name, name: name, contact: contact };
+      render();
+    }
+    function cancelEditBuyer() {
+      adminState.editing = null;
+      render();
+    }
+    async function saveEditBuyer() {
+      const e = adminState.editing;
+      if (!e || !e.name.trim()) return;
+      const newName = e.name.trim();
+      const newContact = e.contact.trim();
+      // Update all tickets belonging to the original buyer
+      await sbPatch('raffle_tickets', `buyer_name=eq.${encodeURIComponent(e.originalName)}`, { buyer_name: newName, buyer_email: newContact });
+      adminState.editing = null;
+      allTickets = await getAllTickets();
+      if (!Array.isArray(allTickets)) allTickets = [];
+      render();
     }
     async function toggleTicket(num, paid) {
       await updateTicketPaid(num, paid);
